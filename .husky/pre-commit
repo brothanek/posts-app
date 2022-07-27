@@ -3,4 +3,4 @@
 
 yarn tsc
 yarn lint-staged
-echo "pre-commit checks done"
+echo "✨✨pre-commit checks done✨✨"
