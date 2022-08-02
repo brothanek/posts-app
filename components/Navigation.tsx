@@ -1,9 +1,10 @@
-import type { ReactNode } from 'react'
-
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
+
 import { useAuth } from 'contexts/AuthContext'
+
+import type { ReactNode } from 'react'
 
 interface ALinkProps {
 	children: ReactNode
@@ -51,14 +52,10 @@ const Navigation = () => {
 					{user ? (
 						<div className="flex">
 							<ActiveLink activeColor="blue" unusedColor="black" href={'/dashboard'}>
-								<a className="flex">
-									<span>My Articles</span>
-								</a>
+								<span>My Articles</span>
 							</ActiveLink>
 							<ActiveLink activeColor="blue" unusedColor="black" href={'/dashboard/create'}>
-								<a className="flex ml-5">
-									<span>Create Article</span>
-								</a>
+								<span>Create Article</span>
 							</ActiveLink>
 						</div>
 					) : (
