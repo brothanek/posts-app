@@ -44,13 +44,15 @@
 		"postcss": "^8.4.14",
 		"prettier": "^2.7.1",
 		"tailwindcss": "^3.1.6",
+		"tsc-files": "^1.1.3",
 		"typescript": "4.7.4"
 	},
 	"lint-staged": {
 		"**/*.{js,jsx,ts,tsx}": [
+			"yarn tsc-files --noEmit",
 			"yarn eslint",
 			"yarn prettier --write",
-			"yarn test --watch --watchAll=false --findRelatedTests --bail"
+			"yarn test --watchAll=false --findRelatedTests --passWithNoTests --bail"
 		]
 	}
 }
