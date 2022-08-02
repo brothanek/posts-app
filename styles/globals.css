@@ -11,6 +11,19 @@ body {
 	color: black;
 	background-color: white;
 }
+h1 {
+	font-weight: 500;
+	font-size: 28px;
+	line-height: 32px;
+}
+main {
+	min-height: 100vh;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
 
 a {
 	color: inherit;
@@ -19,14 +32,4 @@ a {
 
 * {
 	box-sizing: border-box;
-}
-
-@media (prefers-color-scheme: dark) {
-	html {
-		color-scheme: dark;
-	}
-	body {
-		color: white;
-		background: black;
-	}
 }
