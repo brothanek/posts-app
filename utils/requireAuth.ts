@@ -1,4 +1,3 @@
-import axios from 'axios'
 import Cookies from 'cookies'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 

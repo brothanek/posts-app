@@ -6,8 +6,6 @@ import { createContext, useState } from 'react'
 import { useRouter } from 'next/dist/client/router'
 import { useContext } from 'react'
 
-const URL = 'http://localhost:3000/'
-
 interface ProviderProps {
 	children: React.ReactNode
 }
@@ -25,8 +23,7 @@ export interface SignInProps {
 }
 
 const AuthContext = createContext({
-	user: undefined,
-	error: undefined,
+	user: '',
 	signIn: (credentials: SignInProps) => {
 		return
 	},
@@ -40,16 +37,14 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }: ProviderProps) => {
-	const [user, setUser] = useState()
-	// Error is unknown to support every form of error this is any
-	const [error, setError] = useState<any>()
+	const [user, setUser] = useState<string>('')
 
 	const Router = useRouter()
 
 	const checkIfLoggedIn = () => {
 		try {
-			// const res = await axios.post(`${NEXT_URL}/api/auth/user`);
-			// setUser('test')
+			const storageUser = localStorage.getItem('user') || ''
+			setUser(storageUser)
 		} catch (e) {}
 	}
 
@@ -57,32 +52,34 @@ export const AuthProvider = ({ children }: ProviderProps) => {
 		checkIfLoggedIn()
 	}, [])
 
+	const handleError = (error: string) => toast.error(error)
+
 	// Sign in
 	const signIn = async (credentials: SignInProps) => {
 		try {
-			const res = await axios.post(`${URL}/api/auth/login`, credentials)
+			const res = await axios.post(`/api/auth/login`, credentials)
 
 			if (res.data.error) {
-				toast.error(res.data.error.message)
-				setError(res.data.error.message)
+				handleError(res.data.error.message)
 				return
 			}
 
 			const { username } = res.data
 			setUser(username)
+			localStorage.setItem('user', username)
 			Router.push('/dashboard')
 			toast.success(username + ' was logged in')
 		} catch (error) {
 			console.error(error)
-			setError(error)
+			handleError(JSON.stringify(error))
 		}
 	}
 
 	// Sign out
 	const signOut = async () => {
 		try {
-			await axios.post(`${URL}/api/auth/logout`)
-			setUser(undefined)
+			await axios.post(`/api/auth/logout`)
+			setUser('')
 			Router.push('/')
 			toast.success('Logged out successfully!')
 		} catch (error) {
@@ -90,7 +87,7 @@ export const AuthProvider = ({ children }: ProviderProps) => {
 		}
 	}
 
-	return <AuthContext.Provider value={{ user, error, signIn, signOut }}>{children}</AuthContext.Provider>
+	return <AuthContext.Provider value={{ user, signIn, signOut }}>{children}</AuthContext.Provider>
 }
 
 export default AuthContext
