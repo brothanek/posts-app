@@ -1,16 +1,21 @@
 import '../styles/globals.css'
-import type { AppProps } from 'next/app'
-import Navigation from '@components/Navigation'
-import { AuthProvider } from 'contexts/AuthContext'
 import { Toaster } from 'react-hot-toast'
+import { ThemeProvider } from '@material-tailwind/react'
+import { IntlProvider } from 'react-intl'
+import { AuthProvider } from '@contexts/AuthContext'
+
+import type { AppProps } from 'next/app'
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
-		<AuthProvider>
-			<Navigation />
-			<Toaster />
-			<Component {...pageProps} />
-		</AuthProvider>
+		<IntlProvider locale="en-US">
+			<ThemeProvider>
+				<AuthProvider>
+					<Toaster />
+					<Component {...pageProps} />
+				</AuthProvider>
+			</ThemeProvider>
+		</IntlProvider>
 	)
 }
 

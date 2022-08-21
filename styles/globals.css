@@ -13,16 +13,13 @@ body {
 }
 h1 {
 	font-weight: 500;
-	font-size: 28px;
-	line-height: 32px;
+	font-size: 40px;
+	line-height: 48px;
 }
-main {
-	min-height: 100vh;
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+h4 {
+	font-weight: 500;
+	font-size: 24px;
+	line-height: 28px;
 }
 
 a {
@@ -32,4 +29,23 @@ a {
 
 * {
 	box-sizing: border-box;
+}
+
+input {
+	@apply shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none;
+}
+
+label {
+	color: rgb(55 65 81);
+	@apply block mb-2;
+}
+
+td {
+	@apply text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap;
+}
+th {
+	@apply text-sm font-medium text-gray-900 px-6 py-4 text-left select-none;
+}
+.form-error {
+	@apply text-red-500 text-xs italic;
 }

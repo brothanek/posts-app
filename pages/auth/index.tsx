@@ -1,26 +1,17 @@
-import type { NextPage } from 'next'
-
 import { useState } from 'react'
-import Head from 'next/head'
 import LoginForm from '@components/forms/auth/LoginForm'
+import Layout from '@components/Layout'
+
+import type { NextPage } from 'next'
 
 const AuthPage: NextPage = () => {
 	const [creatingAcc, setCreatingAcc] = useState(false)
 
-	const switchContext = () => {
+	const toggle = () => {
 		setCreatingAcc((prevState) => !prevState)
 	}
 
-	return (
-		<div>
-			<Head>
-				<title>Articles</title>
-				<meta name="description" content="Get to read the newest articles about your favorite animals" />
-				<link rel="icon" href="/favicon.ico" />
-			</Head>
-			<main>{creatingAcc ? <LoginForm /> : <LoginForm />}</main>
-		</div>
-	)
+	return <Layout title="Login">{creatingAcc ? <LoginForm /> : <LoginForm />}</Layout>
 }
 
 export default AuthPage

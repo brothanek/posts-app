@@ -1,14 +1,21 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
+import ArticleForm from '@components/forms/ArticleForm'
+import Layout from '@components/Layout'
+import { requireAuthentication } from 'utils/requireAuth'
+
+import type { GetServerSideProps, NextPage } from 'next'
 
 const Dashboard: NextPage = () => {
 	return (
-		<div>
-			<main className="bg-white h-screen">
-				<h1 className="pt-20">NEW</h1>
-			</main>
-		</div>
+		<Layout>
+			<ArticleForm />
+		</Layout>
 	)
 }
 
 export default Dashboard
+
+export const getServerSideProps: GetServerSideProps = requireAuthentication(async () => {
+	return {
+		props: {},
+	}
+})
