@@ -3,6 +3,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"@components/*": ["components/*"],
+			"@contexts/*": ["contexts/*"],
 			"@pages/*": ["pages/*"],
 			"@hooks/*": ["hooks/*"]
 		},
@@ -20,6 +21,7 @@
 		"isolatedModules": true,
 		"jsx": "preserve",
 		"incremental": true
+		// "noUnusedLocals": true
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "__tests__/index.test.js"],
 	"exclude": ["node_modules"]
