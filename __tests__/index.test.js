@@ -2,7 +2,7 @@ import React from 'react'
 // Using render and screen from test-utils.js instead of
 // @testing-library/react
 import { render, screen } from '@testing-library/react'
-import Home from '../pages/index'
+import Home from '@pages/index'
 
 describe('HomePage', () => {
 	it('renders a heading', () => {
