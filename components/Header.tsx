@@ -34,7 +34,7 @@ const Header = () => {
 						<Image height={'44'} width={'39'} src="/logo.svg" alt="logo" />
 					</WithLink>
 
-					<div className="flex ml-5">
+					<div className="ml-5 hidden md:flex">
 						<ActiveLink href={'/'}>
 							<span>Recent Articles</span>
 						</ActiveLink>

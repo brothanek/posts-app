@@ -9,7 +9,7 @@ import { FiEdit2 } from 'react-icons/fi'
 import { MdArrowDownward, MdArrowUpward } from 'react-icons/md'
 import { FormattedDate } from 'react-intl'
 import WithLink from '@components/WithLink'
-import type { Article, ArticleKey } from 'types'
+import type { ArticleProps, ArticleKey } from 'types'
 
 const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
 	{ accessor: 'title', Header: 'Article Title' },
@@ -17,8 +17,8 @@ const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
 	{ accessor: 'createdAt', Header: 'Created at' },
 ]
 
-export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
-	const [articles, setArticles] = useState(DATA)
+export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
+	const [articles, setArticles] = useState(DATA || [])
 	const columns = useMemo(() => COLUMNS, [])
 	const data = useMemo(() => articles, [articles])
 
@@ -38,7 +38,7 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 			const { status, data } = await axios.delete(`/api/articles/${id}`)
 
 			if (status == 200) {
-				setArticles((arr) => _.filter(arr, ({ articleId }) => articleId !== id))
+				setArticles((arr) => _.filter(arr, ({ _id }) => _id !== id))
 				toast.success(data.message)
 			} else {
 				toast.error(data.message)
@@ -83,8 +83,8 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 							<tbody {...getTableBodyProps()}>
 								{rows.map((row) => {
 									prepareRow(row)
-									const { articleId } = row.original
-									const link = `articles/${articleId}/view`
+									const { _id } = row.original
+									const link = `articles/${_id}/view`
 									return (
 										// eslint-disable-next-line react/jsx-key
 										<tr {...row.getRowProps()} className="border-b hover:bg-gray-100">
@@ -100,7 +100,7 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 												}
 												return (
 													// eslint-disable-next-line react/jsx-key
-													<td {...cell.getCellProps()}>
+													<td className="max-w-xs truncate" {...cell.getCellProps()}>
 														<WithLink className="hover:text-blue-500" href={link}>
 															{cell.render('Cell')}
 														</WithLink>
@@ -111,12 +111,12 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 											<td>
 												<ul className="flex">
 													<li>
-														<button onClick={(e) => deleteArticle(e, articleId)}>
+														<button onClick={(e) => deleteArticle(e, _id)}>
 															<AiOutlineDelete size="22" />
 														</button>
 													</li>
 													<li className="ml-3">
-														<Link href={`articles/${articleId}/edit`}>
+														<Link href={`articles/${_id}/edit`}>
 															<a>
 																<FiEdit2 size="20" />
 															</a>

@@ -1,80 +1,33 @@
 import React, { useState, useRef } from 'react'
 import { Formik } from 'formik'
 import axios from 'axios'
-import Image from 'next/image'
 import toast from 'react-hot-toast'
-import { useMemo } from 'react'
 import { useRouter } from 'next/router'
 import ReactMarkdown from 'react-markdown'
 import { Switch } from '@material-tailwind/react'
+import { ImageHandler } from './ImageHandler'
 
-const ImageHandler = ({
-	image,
-	setImage,
-	errors,
-	touched,
-}: {
-	image: File | null
-	setImage: (image: File) => void
-	errors: any
-	touched: any
-}) => {
-	const inputRef = useRef(null)
-	const url = useMemo(() => image && URL.createObjectURL(image), [image])
+export type ImageProps = File | string | null
 
-	const handleFileInputChange = ({ target }: React.FormEvent<HTMLInputElement>) => {
-		if (!target) return
-		const img = (target as any).files[0]
-		setImage(img)
-	}
-
-	const handleClick = (e: React.FormEvent<HTMLButtonElement>) => {
-		e.preventDefault()
-		if (!inputRef.current) return
-		;(inputRef.current as any).click()
-	}
-
-	return (
-		<>
-			<label>Featured image</label>
-			<input
-				ref={inputRef}
-				type="file"
-				name="image"
-				className="hidden"
-				accept="image/png, image/jpeg"
-				multiple
-				onChange={handleFileInputChange}
-			/>
-			<button onClick={handleClick} className="rounded bg-gray-600 hover:bg-gray-700 text-white px-2 py-0.5">
-				Upload an image
-			</button>
-			<p className="form-error mb-2">{touched.perex && errors.image}</p>
-			{image && url && (
-				<div>
-					<Image alt="not found" width={'200px'} height={'200px'} src={url} />
-				</div>
-			)}
-		</>
-	)
-}
-
-interface ValuesType {
+interface FormProps {
 	title?: string
 	perex?: string
 	content?: string
+	imageUrl?: string
 	formTitle?: string
 	handleRequest?: (inputs: { perex: string; title: string; content: string }) => Promise<void> | null
 }
 
-const ArticleForm: React.FC<ValuesType> = ({
+const ArticleForm: React.FC<FormProps> = ({
 	title = '',
 	perex = '',
 	content = '',
+	imageUrl = null,
 	formTitle = 'Create new article',
 	handleRequest = null,
 }) => {
-	const [image, setImage] = useState<File | null>(null)
+	const username = 'Ondra'
+	const [image, setImage] = useState<ImageProps>(imageUrl)
 	const [markdown, setMarkdown] = useState(false)
 
 	const toggleMarkdown = () => {
@@ -87,34 +40,33 @@ const ArticleForm: React.FC<ValuesType> = ({
 		if (handleRequest) {
 			await handleRequest(inputs)
 		} else {
-			if (image) {
-				const body = new FormData()
-				const blob = new Blob([JSON.stringify(inputs)], {
-					type: 'application/json',
+			if (!image) return
+			let imageUrl = null
+			const body = new FormData()
+			body.append('image', image)
+			try {
+				const { data } = await axios.post('/api/images/upload', body, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
 				})
-				body.append('image', image)
-				body.append('inputs', blob)
-
-				try {
-					const { status, data } = await axios.post('/api/articles', body, {
-						headers: {
-							'Content-Type': 'multipart/form-data',
-							Accept: 'multipart/form-data',
-						},
-					})
-
-					Router.push('/dashboard')
-					toast.success(data.message)
-				} catch (e) {
-					toast.error(JSON.stringify(e))
-				} finally {
-					setSubmitting(false)
-				}
+				imageUrl = data?.url
+			} catch (e) {
+				console.log(e)
+			}
+			try {
+				const { data } = await axios.post('/api/articles', { ...inputs, imageUrl, author: username })
+				Router.push('/dashboard')
+				toast.success(data.message)
+			} catch (e) {
+				toast.error(JSON.stringify(e))
+			} finally {
+				setSubmitting(false)
 			}
 		}
 	}
 
-	const handleValidation = (values: ValuesType) => {
+	const handleValidation = (values: { title: string; perex: string; content: string }) => {
 		const errors: any = {}
 		if (!values.title) {
 			errors.title = 'Required'
@@ -124,6 +76,8 @@ const ArticleForm: React.FC<ValuesType> = ({
 		}
 		if (!values.content) {
 			errors.content = 'Required'
+		} else if (values.content?.length < 10) {
+			errors.content = 'Content needs to have at least 10 characters'
 		}
 		if (!image) {
 			errors.image = 'Required'
@@ -135,15 +89,11 @@ const ArticleForm: React.FC<ValuesType> = ({
 		<Formik initialValues={{ title, perex, content }} validate={handleValidation} onSubmit={handleSubmit}>
 			{({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
 				return (
-					<form className="w-2/3 pt-20" onSubmit={handleSubmit}>
-						<div className="flex items-center">
+					<form className="w-max pt-20" onSubmit={handleSubmit}>
+						<div className="flex items-center sm:flex-row flex-col">
 							<h1>{formTitle}</h1>
 							<div>
-								<button
-									className="ml-10 bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded focus:outline-none focus:shadow-outline"
-									type="submit"
-									disabled={isSubmitting}
-								>
+								<button className="primary-btn mt-4 sm:mt-0 ml-10" type="submit" disabled={isSubmitting}>
 									Publish article
 								</button>
 							</div>
@@ -161,7 +111,7 @@ const ArticleForm: React.FC<ValuesType> = ({
 							/>
 							<p className="form-error">{touched.title && errors.title}</p>
 						</div>
-						<ImageHandler errors={errors} touched={touched} image={image} setImage={setImage} />
+						<ImageHandler errors={errors} image={image} setImage={setImage} />
 
 						<div className="mb-6">
 							<label>Perex</label>

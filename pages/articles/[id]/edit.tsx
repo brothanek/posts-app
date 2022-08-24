@@ -2,17 +2,18 @@ import ArticleForm from '@components/forms/ArticleForm'
 import Layout from '@components/Layout'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { requireAuthentication } from 'utils/requireAuth'
+import { requireAuthentication } from 'api-lib/middleware/requireAuth'
 
-import type { Article } from 'types'
+import type { ArticleProps } from 'types'
 import type { GetServerSideProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { getArticle } from '@pages/api/articles/[id]'
 
-const Edit: NextPage<{ article: Article }> = ({ article }) => {
+const Edit: NextPage<ArticleProps> = (article) => {
 	const Router = useRouter()
 	const patchArticle = async (inputs: { perex: string; title: string; content: string }) => {
 		try {
-			const { data } = await axios.patch(`/api/articles/${article.articleId}`, inputs)
+			const { data } = await axios.patch(`/api/articles/${article._id}`, inputs)
 			Router.push('/dashboard')
 			toast.success(data?.message)
 		} catch (e) {
@@ -32,12 +33,11 @@ export default Edit
 export const getServerSideProps: GetServerSideProps = requireAuthentication(async (ctx) => {
 	const id = ctx.query.id
 	try {
-		const response = await axios.get(`${process.env.API_URL}/articles/${id}`, {
-			headers: { 'X-API-KEY': process.env.X_API_KEY! },
-		})
-		const article: Article = response?.data || {}
+		const article: ArticleProps = JSON.parse(JSON.stringify(await getArticle(id!)))
+		console.log(article)
+
 		return {
-			props: { article },
+			props: article,
 		}
 	} catch (e) {
 		console.log(e)

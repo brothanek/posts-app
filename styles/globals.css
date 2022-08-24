@@ -13,8 +13,7 @@ body {
 }
 h1 {
 	font-weight: 500;
-	font-size: 40px;
-	line-height: 48px;
+	@apply sm:text-5xl text-4xl
 }
 h4 {
 	font-weight: 500;
@@ -45,6 +44,9 @@ td {
 }
 th {
 	@apply text-sm font-medium text-gray-900 px-6 py-4 text-left select-none;
+}
+.primary-btn {
+	@apply bg-blue-500 hover:bg-blue-700 rounded text-white px-3 py-2;
 }
 .form-error {
 	@apply text-red-500 text-xs italic;
