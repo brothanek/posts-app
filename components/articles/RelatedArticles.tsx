@@ -1,12 +1,12 @@
 import axios from 'axios'
 import useSWR from 'swr'
 import WithLink from '@components/WithLink'
-import type { Article } from 'types'
+import type { ArticleProps } from 'types'
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data)
 
 export const RelatedArticles = ({ currentId = '' }) => {
-	const { data: articles, error } = useSWR<Article[]>('/api/articles', fetcher)
+	const { data: articles, error } = useSWR<ArticleProps[]>('/api/articles', fetcher)
 
 	if (error) return <p className="form-error">Something went wrong</p>
 	if (!articles) return <p>Loading...</p>
@@ -14,10 +14,10 @@ export const RelatedArticles = ({ currentId = '' }) => {
 	return (
 		<div>
 			{articles
-				.filter(({ articleId }) => articleId !== currentId)
-				.map(({ title, articleId, perex }) => {
+				.filter(({ _id }) => _id !== currentId)
+				.map(({ title, _id, perex }) => {
 					return (
-						<WithLink key={articleId} href={`/articles/${articleId}/view`}>
+						<WithLink key={_id} href={`/articles/${_id}/view`}>
 							<div className="mt-4 px-2 hover:bg-gray-100 cursor-pointer">
 								<p className="font-bold">{title}</p>
 								<p>{perex}</p>

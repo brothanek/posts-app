@@ -18,15 +18,8 @@ export default function Layout({ children, title, className }: Props) {
 			</Head>
 			<Header />
 			<main>
-				<div className={`container ${className}`}>{children}</div>
+				<div className={`max-w-5xl m-auto mt-0 pt-12 pb-4 px-8 sm:px-4 md:px-2 ${className}`}>{children}</div>
 			</main>
-			<style jsx global>{`
-				.container {
-					max-width: 65rem;
-					margin: 0 auto;
-					padding-top: 50px;
-				}
-			`}</style>
 		</React.Fragment>
 	)
 }
