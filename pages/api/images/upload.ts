@@ -15,7 +15,7 @@ const upload = async (imagePath: string, cloudinaryUrl: string) => {
 		api_secret,
 	})
 	const image = await cloudinary.uploader.upload(imagePath)
-	return image.secure_url
+	return { url: image.secure_url, id: image.public_id }
 }
 
 const handler = nc<NextApiRequest, NextApiResponse>().post(async (req, res) => {
@@ -28,8 +28,8 @@ const handler = nc<NextApiRequest, NextApiResponse>().post(async (req, res) => {
 			try {
 				const imagePath = (files.image as formidable.File).toJSON().filepath
 				if (!imagePath) return res.json({ success: false, message: 'No image path found' })
-				const url = await upload(imagePath, CLOUDINARY_URL)
-				return res.status(200).json({ success: true, message: 'Image uploaded', url })
+				const { url, id } = await upload(imagePath, CLOUDINARY_URL)
+				return res.status(200).json({ success: true, message: 'Image uploaded', url, id })
 			} catch (e) {
 				console.log(e)
 				return res.status(401).json({ message: e })

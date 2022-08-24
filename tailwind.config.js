@@ -6,9 +6,6 @@ module.exports = withMT({
 	theme: {
 		extend: {
 			backgroundColor: { nav: '#F8F9FA' },
-			width: {
-				'80w': '80vw',
-			},
 		},
 	},
 	plugins: [],

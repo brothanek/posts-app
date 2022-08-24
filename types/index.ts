@@ -10,15 +10,15 @@ export interface SignInProps {
 }
 
 export interface ArticleProps {
-	_id: string
+	_id?: string
 	author: string
 	title: string
 	content: string
 	perex: string
-	imageUrl: string
-	updatedAt: string
-	createdAt: string
-	comments: CommentProps[]
+	cloudinary_img?: { url?: string; id?: string }
+	updatedAt?: string
+	createdAt?: string
+	comments?: CommentProps[]
 }
 export type ArticleKey = keyof ArticleProps
 

@@ -6,7 +6,7 @@ const articleSchema = new mongoose.Schema({
 	title: { type: String, required: true },
 	content: { type: String, required: true, minLength: 10 },
 	perex: String,
-	imageUrl: String,
+	cloudinary_img: { url: String, id: String },
 	updatedAt: Date,
 	createdAt: { type: Date, default: () => new Date(), immutable: true },
 	comments: [commentSchema],

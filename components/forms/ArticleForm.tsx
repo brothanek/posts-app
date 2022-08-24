@@ -6,28 +6,48 @@ import { useRouter } from 'next/router'
 import ReactMarkdown from 'react-markdown'
 import { Switch } from '@material-tailwind/react'
 import { ImageHandler } from './ImageHandler'
+import { ArticleProps } from 'types'
+import { PatchInputProps } from '@pages/articles/[id]/edit'
 
-export type ImageProps = File | string | null
+export type ImageProps = File | string
 
 interface FormProps {
 	title?: string
 	perex?: string
 	content?: string
-	imageUrl?: string
+	cloudinary_img?: { url?: string; id?: string }
 	formTitle?: string
-	handleRequest?: (inputs: { perex: string; title: string; content: string }) => Promise<void> | null
+	handleRequest?: (inputs: PatchInputProps) => Promise<void> | null
+}
+
+const uploadImage = async (image: string | File) => {
+	// image will be string when only displaying already uploaded image
+	if (typeof image === 'string') return
+	const body = new FormData()
+	body.append('image', image)
+	const { data } = await axios.post('/api/images/upload', body, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	})
+
+	if (!data?.url) {
+		toast.error('Image upload failed, please try again later')
+		return
+	}
+	return data
 }
 
 const ArticleForm: React.FC<FormProps> = ({
 	title = '',
 	perex = '',
 	content = '',
-	imageUrl = null,
+	cloudinary_img = { url: '', id: '' },
 	formTitle = 'Create new article',
 	handleRequest = null,
 }) => {
 	const username = 'Ondra'
-	const [image, setImage] = useState<ImageProps>(imageUrl)
+	const [image, setImage] = useState<ImageProps>(cloudinary_img?.url || '')
 	const [markdown, setMarkdown] = useState(false)
 
 	const toggleMarkdown = () => {
@@ -36,28 +56,36 @@ const ArticleForm: React.FC<FormProps> = ({
 
 	const Router = useRouter()
 
-	const handleSubmit = async (inputs: { perex: string; title: string; content: string }, { setSubmitting }: any) => {
+	const handleSubmit = async (inputs: PatchInputProps, { setSubmitting }: any) => {
 		if (handleRequest) {
-			await handleRequest(inputs)
-		} else {
-			if (!image) return
-			let imageUrl = null
-			const body = new FormData()
-			body.append('image', image)
 			try {
-				const { data } = await axios.post('/api/images/upload', body, {
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
-				})
-				imageUrl = data?.url
+				let body = inputs
+				console.log({ image })
+
+				if (image) {
+					const { url, id } = await uploadImage(image)
+					if (!url || !id) return toast.error('Image upload failed')
+					body.cloudinary_img = { url, id }
+				}
+				await handleRequest(body)
 			} catch (e) {
 				console.log(e)
+				toast.error('Something went wrong')
 			}
+		} else {
+			if (!image) return
 			try {
-				const { data } = await axios.post('/api/articles', { ...inputs, imageUrl, author: username })
+				const { url, id } = await uploadImage(image)
+				if (!url || !id) return
+				const articleBody: ArticleProps = {
+					...inputs,
+					cloudinary_img: { url, id },
+					author: username,
+				}
+				const { data } = await axios.post('/api/articles', articleBody)
+
 				Router.push('/dashboard')
-				toast.success(data.message)
+				toast.success(data.message || 'Image successfully uploaded')
 			} catch (e) {
 				toast.error(JSON.stringify(e))
 			} finally {
@@ -89,8 +117,8 @@ const ArticleForm: React.FC<FormProps> = ({
 		<Formik initialValues={{ title, perex, content }} validate={handleValidation} onSubmit={handleSubmit}>
 			{({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
 				return (
-					<form className="w-max pt-20" onSubmit={handleSubmit}>
-						<div className="flex items-center sm:flex-row flex-col">
+					<form className="w-full max-w-xl pt-20" onSubmit={handleSubmit}>
+						<div className="w-full flex items-center sm:flex-row flex-col">
 							<h1>{formTitle}</h1>
 							<div>
 								<button className="primary-btn mt-4 sm:mt-0 ml-10" type="submit" disabled={isSubmitting}>

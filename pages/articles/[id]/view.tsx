@@ -10,11 +10,11 @@ const View: NextPage<ArticleProps> = (article) => {
 	const { _id = '' } = article
 	return (
 		<Layout>
-			<div className="flex mt-20">
-				<div className="w-2/3 min-h-screen">
+			<div className="flex flex-col md:flex-row mt-20">
+				<div className="min-h-screen md:w-2/3">
 					<Article data={article} />
 				</div>
-				<div className="w-1/3 ml-4 pl-6 border-l h-full">
+				<div className="max-w-md ml-4 pl-6 border-l h-full">
 					<h4>Related articles</h4>
 					<RelatedArticles currentId={_id} />
 				</div>

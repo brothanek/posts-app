@@ -8,14 +8,14 @@ import { Comments } from './Comments'
 const Article = ({ data }: { data: ArticleProps }) => {
 	const [imgErr, setImgErr] = useState(false)
 	const {
-		_id,
+		_id = '',
 		createdAt,
 		author = 'Name',
 		title = 'Not found',
 		perex = 'Perex',
 		content = '**Content**',
 		comments = [],
-		imageUrl,
+		cloudinary_img,
 	} = data
 
 	const toggleError = () => {
@@ -25,20 +25,21 @@ const Article = ({ data }: { data: ArticleProps }) => {
 	return (
 		<div>
 			<h1>{title}</h1>
-			<AuthorAndDate className="mt-6" date={createdAt} author={author} />
-
-			<div style={{ display: !imgErr ? 'block' : 'none' }}>
-				<Image
-					onError={() => setImgErr(true)}
-					onLoad={() => setImgErr(false)}
-					width={400}
-					height={200}
-					layout="responsive"
-					objectFit="cover"
-					src={imageUrl || '/none'}
-					alt="article image"
-				/>
-			</div>
+			<AuthorAndDate className="my-6" date={createdAt} author={author} />
+			{cloudinary_img?.url && (
+				<div style={{ display: !imgErr ? 'block' : 'none' }}>
+					<Image
+						onError={() => setImgErr(true)}
+						onLoad={() => setImgErr(false)}
+						width={1.4}
+						height={1}
+						layout="responsive"
+						objectFit="cover"
+						src={cloudinary_img?.url}
+						alt="article image"
+					/>
+				</div>
+			)}
 
 			<p className="my-8">{perex}</p>
 			<ReactMarkdown>{content}</ReactMarkdown>

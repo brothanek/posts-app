@@ -31,18 +31,19 @@ export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
 		useSortBy,
 	)
 
-	const deleteArticle = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
+	const deleteArticle = async (
+		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		{ imageId, articleId }: { imageId: string; articleId: string },
+	) => {
 		event.preventDefault()
 		if (!window.confirm('Are you sure to delete this article? This action is irreversible.')) return
 		try {
-			const { status, data } = await axios.delete(`/api/articles/${id}`)
+			const { data } = await axios.delete(`/api/articles/${articleId}`)
+			const response = await axios.delete(`/api/images/${imageId}`)
+			// TODO: Implement better response handling
 
-			if (status == 200) {
-				setArticles((arr) => _.filter(arr, ({ _id }) => _id !== id))
-				toast.success(data.message)
-			} else {
-				toast.error(data.message)
-			}
+			setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
+			toast.success(data.message)
 		} catch (e) {
 			console.log(e)
 			toast.error('Something went wrong, please try again later')
@@ -83,7 +84,7 @@ export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
 							<tbody {...getTableBodyProps()}>
 								{rows.map((row) => {
 									prepareRow(row)
-									const { _id } = row.original
+									const { _id, cloudinary_img } = row.original
 									const link = `articles/${_id}/view`
 									return (
 										// eslint-disable-next-line react/jsx-key
@@ -111,7 +112,11 @@ export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
 											<td>
 												<ul className="flex">
 													<li>
-														<button onClick={(e) => deleteArticle(e, _id)}>
+														<button
+															onClick={(e) =>
+																deleteArticle(e, { articleId: _id || '', imageId: cloudinary_img?.id || '' })
+															}
+														>
 															<AiOutlineDelete size="22" />
 														</button>
 													</li>

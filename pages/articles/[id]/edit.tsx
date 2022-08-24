@@ -9,9 +9,16 @@ import type { GetServerSideProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { getArticle } from '@pages/api/articles/[id]'
 
+export interface PatchInputProps {
+	perex: string
+	title: string
+	content: string
+	cloudinary_img?: { url: string | undefined; id: string | undefined }
+}
+
 const Edit: NextPage<ArticleProps> = (article) => {
 	const Router = useRouter()
-	const patchArticle = async (inputs: { perex: string; title: string; content: string }) => {
+	const patchArticle = async (inputs: PatchInputProps) => {
 		try {
 			const { data } = await axios.patch(`/api/articles/${article._id}`, inputs)
 			Router.push('/dashboard')
@@ -34,7 +41,6 @@ export const getServerSideProps: GetServerSideProps = requireAuthentication(asyn
 	const id = ctx.query.id
 	try {
 		const article: ArticleProps = JSON.parse(JSON.stringify(await getArticle(id!)))
-		console.log(article)
 
 		return {
 			props: article,
