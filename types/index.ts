@@ -9,27 +9,23 @@ export interface SignInProps {
 	password: string
 }
 
-export interface Article {
-	articleId: string
+export interface ArticleProps {
+	_id: string
 	author: string
 	title: string
 	content: string
 	perex: string
-	imageId: string
+	imageUrl: string
 	updatedAt: string
 	createdAt: string
+	comments: CommentProps[]
 }
-export type ArticleKey = keyof Article
+export type ArticleKey = keyof ArticleProps
 
-export interface Comment {
+export interface CommentProps {
+	_id: string
 	articleId: string
 	author: string
 	content: string
-	commentId: string
-	postedAt: string
-	score: number
-}
-
-export interface ArticleWithComments extends Article {
-	comments: Comment[]
+	createdAt: string
 }
