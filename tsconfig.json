@@ -23,6 +23,6 @@
 		"incremental": true
 		// "noUnusedLocals": true
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "__tests__/index.test.js"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
 	"exclude": ["node_modules"]
 }
