@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
-const { X_API_KEY, API_URL, MONGODB_URI, CLOUDINARY_URL } = process.env
+const { API_URL, MONGODB_URI, CLOUDINARY_URL, SESSION_SECRET } = process.env
 
 const nextConfig = {
 	reactStrictMode: true,
 	swcMinify: true,
-	env: { X_API_KEY, API_URL, MONGODB_URI, CLOUDINARY_URL },
+	env: { API_URL, MONGODB_URI, CLOUDINARY_URL, SESSION_SECRET },
 	images: { domains: ['res.cloudinary.com'] },
 }
 

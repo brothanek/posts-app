@@ -23,6 +23,6 @@
 		"incremental": true
 		// "noUnusedLocals": true
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "lib/session.js"],
 	"exclude": ["node_modules"]
 }

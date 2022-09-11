@@ -14,7 +14,9 @@ const upload = async (imagePath: string, cloudinaryUrl: string) => {
 		api_key,
 		api_secret,
 	})
-	const image = await cloudinary.uploader.upload(imagePath)
+	const image = await cloudinary.uploader.upload(imagePath, {
+		quality: '20',
+	})
 	return { url: image.secure_url, id: image.public_id }
 }
 
