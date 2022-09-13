@@ -30,6 +30,7 @@ export async function getStaticProps() {
 		const articles: ArticleProps[] = JSON.parse(JSON.stringify(await getArticles()))
 		return {
 			props: { articles }, // will be passed to the page component as props
+			revalidate: 10, // 10 seconds
 		}
 	} catch (e) {
 		console.log(e)

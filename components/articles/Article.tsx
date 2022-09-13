@@ -15,7 +15,7 @@ const Article = ({ data }: { data: ArticleProps }) => {
 	return (
 		<div className="w-full">
 			<h1>{title}</h1>
-			<p className="text-xl">{perex}</p>
+			<p className="text-xl mt-1">{perex}</p>
 			<AuthorAndDate className="mt-4" date={createdAt} author={author} />
 
 			{cloudinary_img?.url && (
