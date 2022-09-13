@@ -1,77 +1,52 @@
-import axios from 'axios'
-import { authHeaders } from 'utils/middleware/apiHelpers'
-import formidable from 'formidable'
 import nc from 'next-connect'
-import fs from 'fs'
-import FormData from 'form-data'
+import Article from 'models/Article'
+import dbConnect from 'lib/dbConnect.ts'
+import auth from 'middleware/auth'
+import { ArticleProps, NextApiRequestWithUser } from 'types'
+import type { NextApiResponse } from 'next'
 
-import type { NextApiRequest, NextApiResponse } from 'next'
-
-const form = formidable({})
-
-const handler = nc<NextApiRequest, NextApiResponse>()
+export const getArticles = async (username?: string) => {
+	await dbConnect()
+	if (username) {
+		return await Article.find({ author: username }).sort({ createdAt: -1 })
+	}
+	return await Article.find().sort({ createdAt: -1 })
+}
+const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 	.get(async (req, res) => {
+		await dbConnect()
 		try {
-			const { data } = await axios.get(`${process.env.API_URL}/articles`, {
-				headers: { 'X-API-KEY': process.env.X_API_KEY || '' },
-			})
-			res.status(200).json(data.items || [])
-		} catch (e) {
-			console.log(e)
-			return res.json({ e })
+			const articles = await getArticles()
+			res.status(200).json(articles)
+		} catch (error) {
+			console.log(error)
+			res.status(400).json({ success: false, error })
 		}
 	})
+	.use(auth)
+	.use(async (req, res, next) => {
+		const { id } = req.query
+		const authCheck = req.user.username === req.body.author
+		if (!authCheck) return res.status(400).json({ success: false, error: { message: 'Not authorized' } })
+		next()
+	})
 	.post(async (req, res) => {
-		const headers = authHeaders(req, res)
+		try {
+			const { title, content, perex, cloudinary_img } = req.body as ArticleProps
+			const article = await Article.create({
+				title,
+				content,
+				perex,
+				author: req.user.username,
+				comments: [],
+				cloudinary_img,
+			})
 
-		form.parse(req, async (err, fields, files) => {
-			if (err) {
-				console.log(err)
-			} else {
-				try {
-					const imagePath = (files.image as formidable.File).toJSON().filepath
-					const inputsPath = (files.inputs as formidable.File).toJSON().filepath
-					const imageFile = fs.createReadStream(imagePath)
-
-					const formData = new FormData()
-					formData.append('image', imageFile)
-
-					const {
-						status,
-						data,
-						data: { imageId },
-					} = await axios.post(`${process.env.API_URL}/images`, formData, {
-						headers: { ...headers, 'Content-Type': 'multipart/form-data', Accept: 'application/json' },
-					})
-
-					fs.readFile(inputsPath, 'utf-8', async (err, inputs) => {
-						if (err) {
-							return res.status(401).json({ message: 'Error while reading file' })
-						} else {
-							console.log(inputs)
-
-							const { data: rData } = await axios.post(
-								`${process.env.API_URL}/articles`,
-								{ imageId: data[0].imageId, ...JSON.parse(inputs) },
-								{
-									headers,
-								},
-							)
-							return res.status(200).json({ message: 'Successfully uploaded!', rData })
-						}
-					})
-				} catch (e) {
-					console.log(e, 'error')
-					return res.status(401).json({ message: 'Error' })
-				}
-			}
-		})
+			res.status(200).json({ success: true, data: article, message: 'Article created!' })
+		} catch (error) {
+			console.log(error)
+			res.status(400).json({ success: false, error })
+		}
 	})
 
 export default handler
-
-export const config = {
-	api: {
-		bodyParser: false,
-	},
-}

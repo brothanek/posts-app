@@ -1,30 +1,42 @@
-import axios from 'axios'
 import useSWR from 'swr'
+import { LoaderIcon } from 'react-hot-toast'
 import WithLink from '@components/WithLink'
-import type { Article } from 'types'
+import { fetcher } from 'lib/utils'
+import type { ArticleProps } from 'types'
 
-const fetcher = (url: string) => axios.get(url).then((res) => res.data)
+const Message = ({ error }: { error?: string }) => {
+	if (error) return <p className="text-red-500">Something went wrong</p>
+	return <LoaderIcon />
+}
 
 export const RelatedArticles = ({ currentId = '' }) => {
-	const { data: articles, error } = useSWR<Article[]>('/api/articles', fetcher)
+	const { data, error } = useSWR<ArticleProps[]>('/api/articles', fetcher)
 
-	if (error) return <p className="form-error">Something went wrong</p>
-	if (!articles) return <p>Loading...</p>
+	if (error) return <p className="form-error"></p>
 
 	return (
-		<div>
-			{articles
-				.filter(({ articleId }) => articleId !== currentId)
-				.map(({ title, articleId, perex }) => {
-					return (
-						<WithLink key={articleId} href={`/articles/${articleId}/view`}>
-							<div className="mt-4 px-2 hover:bg-gray-100 cursor-pointer">
-								<p className="font-bold">{title}</p>
-								<p>{perex}</p>
-							</div>
-						</WithLink>
-					)
-				})}
+		<div className="lg:w-1/3 w-full h-full pb-8">
+			<h4>Related articles</h4>
+			<div className="mt-8">
+				{data ? (
+					<div>
+						{data
+							.filter(({ _id }) => _id !== currentId)
+							.map(({ title, _id, perex }) => {
+								return (
+									<WithLink key={_id} href={`/articles/${_id}/view`}>
+										<div className="mt-4 hover:bg-gray-100 cursor-pointer overflow-scroll">
+											<p className="line-clamp-2 text-xl font-light tracking-wide mb-1">{title}</p>
+											<p className="line-clamp-2">{perex}</p>
+										</div>
+									</WithLink>
+								)
+							})}
+					</div>
+				) : (
+					<Message error={error} />
+				)}
+			</div>
 		</div>
 	)
 }
