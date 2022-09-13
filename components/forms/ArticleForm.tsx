@@ -1,52 +1,46 @@
-import React, { useState, useRef } from 'react'
-import { Formik } from 'formik'
+import React, { useState } from 'react'
+import { Formik, FormikHelpers } from 'formik'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import ReactMarkdown from 'react-markdown'
-import { Switch } from '@material-tailwind/react'
-import { ImageHandler } from './ImageHandler'
-import { ArticleProps } from 'types'
-import { PatchInputProps } from '@pages/articles/[id]/edit'
+import { uploadImage } from 'lib/calls'
+import { ImageHandler } from '../ImageHandler'
+import type { ArticleProps } from 'types'
+import type { PatchInputProps } from 'pages/articles/[id]/edit'
 
 export type ImageProps = File | string
 
 interface FormProps {
+	author?: string
 	title?: string
 	perex?: string
 	content?: string
 	cloudinary_img?: { url?: string; id?: string }
 	formTitle?: string
-	handleRequest?: (inputs: PatchInputProps) => Promise<void> | null
+	submitCallback?: (inputs: PatchInputProps) => Promise<void> | null
 }
 
-const uploadImage = async (image: string | File) => {
-	// image will be string when only displaying already uploaded image
+const handleImageUpload = async (image: ImageProps) => {
 	if (typeof image === 'string') return
-	const body = new FormData()
-	body.append('image', image)
-	const { data } = await axios.post('/api/images/upload', body, {
-		headers: {
-			'Content-Type': 'multipart/form-data',
-		},
-	})
 
-	if (!data?.url) {
-		toast.error('Image upload failed, please try again later')
+	const { url, id } = (await uploadImage(image)) || { url: '', id: '' }
+	if (!url || !id) {
+		toast.error('Image upload failed')
 		return
 	}
-	return data
+	return { url, id } as { url: string; id: string }
 }
 
 const ArticleForm: React.FC<FormProps> = ({
+	author = '',
 	title = '',
 	perex = '',
 	content = '',
 	cloudinary_img = { url: '', id: '' },
 	formTitle = 'Create new article',
-	handleRequest = null,
+	submitCallback = null,
 }) => {
-	const username = 'Ondra'
 	const [image, setImage] = useState<ImageProps>(cloudinary_img?.url || '')
 	const [markdown, setMarkdown] = useState(false)
 
@@ -56,38 +50,43 @@ const ArticleForm: React.FC<FormProps> = ({
 
 	const Router = useRouter()
 
-	const handleSubmit = async (inputs: PatchInputProps, { setSubmitting }: any) => {
-		if (handleRequest) {
+	const handleSubmit = async (
+		inputs: PatchInputProps,
+		{ setSubmitting, setFieldError }: FormikHelpers<PatchInputProps>,
+	) => {
+		if (submitCallback) {
 			try {
 				let body = inputs
-				console.log({ image })
-
 				if (image) {
-					const { url, id } = await uploadImage(image)
-					if (!url || !id) return toast.error('Image upload failed')
-					body.cloudinary_img = { url, id }
+					body.cloudinary_img = await handleImageUpload(image)
+					await submitCallback(body)
+				} else {
+					return setFieldError('image', 'Image is required')
 				}
-				await handleRequest(body)
 			} catch (e) {
 				console.log(e)
 				toast.error('Something went wrong')
 			}
 		} else {
-			if (!image) return
+			if (!image) return setFieldError('image', 'Image is required')
+			let imageId
 			try {
-				const { url, id } = await uploadImage(image)
-				if (!url || !id) return
+				const cloudinary_img = await handleImageUpload(image)
+				if (!cloudinary_img) return
+				imageId = cloudinary_img.id
 				const articleBody: ArticleProps = {
 					...inputs,
-					cloudinary_img: { url, id },
-					author: username,
+					cloudinary_img,
+					author,
+					comments: [],
 				}
 				const { data } = await axios.post('/api/articles', articleBody)
 
 				Router.push('/dashboard')
-				toast.success(data.message || 'Image successfully uploaded')
+				toast.success(data.message || 'Article successfully uploaded')
 			} catch (e) {
-				toast.error(JSON.stringify(e))
+				toast.error('Something went wrong')
+				await axios.delete(`/api/images/${imageId}`)
 			} finally {
 				setSubmitting(false)
 			}
@@ -99,16 +98,18 @@ const ArticleForm: React.FC<FormProps> = ({
 		if (!values.title) {
 			errors.title = 'Required'
 		}
-		if (!values.perex) {
-			errors.perex = 'Required'
+		if (values.title.length > 80) {
+			errors.title = 'Title must be less than 80 characters'
 		}
+		if (values.perex.length > 200) {
+			errors.perex = 'Perex must be less than 200 characters'
+		}
+		if (values.content.length > 3000) {
+			errors.content = 'Perex must be less than 3000 characters'
+		}
+
 		if (!values.content) {
 			errors.content = 'Required'
-		} else if (values.content?.length < 10) {
-			errors.content = 'Content needs to have at least 10 characters'
-		}
-		if (!image) {
-			errors.image = 'Required'
 		}
 		return errors
 	}
@@ -116,20 +117,17 @@ const ArticleForm: React.FC<FormProps> = ({
 	return (
 		<Formik initialValues={{ title, perex, content }} validate={handleValidation} onSubmit={handleSubmit}>
 			{({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
+				const titleError = touched.title && errors.title
 				return (
-					<form className="w-full max-w-xl pt-20" onSubmit={handleSubmit}>
-						<div className="w-full flex items-center sm:flex-row flex-col">
+					<form className="w-full max-w-xl m-auto mt-20" onSubmit={handleSubmit}>
+						<div className="w-full flex items-center md:items-start flex-col">
 							<h1>{formTitle}</h1>
-							<div>
-								<button className="primary-btn mt-4 sm:mt-0 ml-10" type="submit" disabled={isSubmitting}>
-									Publish article
-								</button>
-							</div>
 						</div>
 
 						<div className="mb-6 mt-10">
-							<label>Article title</label>
+							<label>Article title *</label>
 							<input
+								className={`input input-bordered w-full ${titleError && 'input-error'}`}
 								type="text"
 								name="title"
 								placeholder="Title"
@@ -137,13 +135,17 @@ const ArticleForm: React.FC<FormProps> = ({
 								onBlur={handleBlur}
 								value={values.title}
 							/>
-							<p className="form-error">{touched.title && errors.title}</p>
+							<p className="form-error">{titleError}</p>
 						</div>
-						<ImageHandler errors={errors} image={image} setImage={setImage} />
+						<div className="mb-6">
+							<ImageHandler image={image} setImage={setImage} />
+							<p className="form-error">{(errors as any).image}</p>
+						</div>
 
 						<div className="mb-6">
 							<label>Perex</label>
 							<input
+								className="input input-bordered w-full"
 								type="text"
 								name="perex"
 								placeholder="Perex"
@@ -155,14 +157,14 @@ const ArticleForm: React.FC<FormProps> = ({
 						</div>
 						<div className="mb-6">
 							<div className="flex items-center">
-								<label>Content</label>
-								<label className="text-sm mr-4 ml-20"> Preview markdown:</label>
-								<Switch checked={markdown} onChange={toggleMarkdown} />
+								<label>Content *</label>
+								<label className="mr-4 ml-20"> Preview markdown:</label>
+								<input type="checkbox" className="toggle -mt-2" checked={markdown} onChange={toggleMarkdown} />
 							</div>
-							<div className="h-56">
+							<div className="h-56 mt-2">
 								{!markdown ? (
 									<textarea
-										className="shadow appearance-none rounded w-full h-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none"
+										className="textarea textarea-bordered resize-none w-full h-full"
 										name="content"
 										placeholder="Type something..."
 										onChange={handleChange}
@@ -170,11 +172,16 @@ const ArticleForm: React.FC<FormProps> = ({
 										value={values.content}
 									/>
 								) : (
-									<ReactMarkdown className="shadow appearance-none rounded h-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-not-allowed">
+									<ReactMarkdown className="shadow appearance-none rounded h-full w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-not-allowed overflow-scroll">
 										{values.content}
 									</ReactMarkdown>
 								)}
 								<p className="form-error">{touched.content && errors.content}</p>
+							</div>
+							<div className="flex justify-end">
+								<button className="btn bg-blue-500 mt-2" type="submit" disabled={isSubmitting}>
+									{!isSubmitting ? 'Submit' : 'Loading...'}
+								</button>
 							</div>
 						</div>
 					</form>

@@ -1,18 +1,24 @@
+import { NextPage } from 'next'
 import { getArticles } from './api/articles'
 import Layout from '@components/Layout'
-
-import type { NextPage } from 'next'
-import type { ArticleProps } from 'types'
-import Image from 'next/image'
 import { ArticlePreview } from '@components/articles/ArticlePreview'
+import type { ArticleProps } from 'types'
+
+const ArticleList = ({ articles }: { articles: ArticleProps[] }) => {
+	return (
+		<div className="flex flex-col items-center md:items-start">
+			{articles.map((article) => {
+				return <ArticlePreview key={article._id} {...article} />
+			})}
+		</div>
+	)
+}
 
 const Home: NextPage<{ articles: ArticleProps[] }> = ({ articles = [] }) => {
 	return (
 		<Layout>
-			<h1 className="pt-20 mb-10">Recent articles</h1>
-			{articles.map((article) => {
-				return <ArticlePreview key={article._id} {...article} />
-			})}
+			<h1 className="pt-20 mb-10 text-center md:text-start">Recent articles</h1>
+			<ArticleList articles={articles} />
 		</Layout>
 	)
 }

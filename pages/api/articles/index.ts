@@ -2,7 +2,7 @@ import nc from 'next-connect'
 import Article from 'models/Article'
 import dbConnect from 'lib/dbConnect.ts'
 import auth from 'middleware/auth'
-import type { ArticleProps, NextApiRequestWithUser } from 'types'
+import { ArticleProps, NextApiRequestWithUser } from 'types'
 import type { NextApiResponse } from 'next'
 
 export const getArticles = async (username?: string) => {

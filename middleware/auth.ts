@@ -20,7 +20,6 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 	)
 	.use(async (req, res, next) => {
 		await dbConnect()
-		req.session.users = req.session.users || []
 		next()
 	})
 	.use(passport.initialize())

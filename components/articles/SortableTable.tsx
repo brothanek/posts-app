@@ -1,8 +1,8 @@
+import React, { useMemo, useState } from 'react'
 import _ from 'lodash'
 import axios from 'axios'
 import Link from 'next/link'
 import { useGlobalFilter, useSortBy, useTable } from 'react-table'
-import React, { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { FiEdit2 } from 'react-icons/fi'
@@ -14,11 +14,12 @@ import type { ArticleProps, ArticleKey } from 'types'
 const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
 	{ accessor: 'title', Header: 'Article Title' },
 	{ accessor: 'perex', Header: 'Perex' },
+	{ accessor: 'comments', Header: 'Comments #' },
 	{ accessor: 'createdAt', Header: 'Created at' },
 ]
 
-export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
-	const [articles, setArticles] = useState(DATA || [])
+export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] }) => {
+	const [articles, setArticles] = useState(tableData || [])
 	const columns = useMemo(() => COLUMNS, [])
 	const data = useMemo(() => articles, [articles])
 
@@ -26,6 +27,14 @@ export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
 		{
 			columns,
 			data,
+			initialState: {
+				sortBy: [
+					{
+						id: 'createdAt',
+						desc: true,
+					},
+				],
+			},
 		},
 		useGlobalFilter,
 		useSortBy,
@@ -39,8 +48,7 @@ export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
 		if (!window.confirm('Are you sure to delete this article? This action is irreversible.')) return
 		try {
 			const { data } = await axios.delete(`/api/articles/${articleId}`)
-			const response = await axios.delete(`/api/images/${imageId}`)
-			// TODO: Implement better response handling
+			await axios.delete(`/api/images/${imageId}`)
 
 			setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
 			toast.success(data.message)
@@ -57,9 +65,9 @@ export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
 
 	return (
 		<div className="flex flex-col">
-			<input className="max-w-sm mb-2" placeholder="Search" onChange={handleFilterInputChange} />
-			<div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-				<div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+			<input className="input input-bordered max-w-sm mb-2" placeholder="Search" onChange={handleFilterInputChange} />
+			<div className="overflow-x-auto lg:-mx-8">
+				<div className="py-2 inline-block min-w-full">
 					<div className="overflow-x">
 						<table className="max-w-full" {...getTableProps()}>
 							<thead className="border-b">
@@ -82,6 +90,13 @@ export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
 								))}
 							</thead>
 							<tbody {...getTableBodyProps()}>
+								{rows.length === 0 && (
+									<tr>
+										<td colSpan={COLUMNS.length + 1} className="text-center">
+											No articles found
+										</td>
+									</tr>
+								)}
 								{rows.map((row) => {
 									prepareRow(row)
 									const { _id, cloudinary_img } = row.original
@@ -141,4 +156,4 @@ export const SortingTable = ({ DATA = [] }: { DATA: ArticleProps[] }) => {
 	)
 }
 
-export default SortingTable
+export default SortableTable

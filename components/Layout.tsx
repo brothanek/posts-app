@@ -18,7 +18,9 @@ export default function Layout({ children, title, className }: Props) {
 			</Head>
 			<Header />
 			<main>
-				<div className={`max-w-5xl m-auto mt-0 pt-12 pb-4 px-8 sm:px-4 md:px-2 ${className}`}>{children}</div>
+				<div className={`w-screen sm:w-2/3 mx-auto mt-0 pt-12 h-full px-8 sm:px-4 md:px-2 ${className}`}>
+					{children}
+				</div>
 			</main>
 		</React.Fragment>
 	)

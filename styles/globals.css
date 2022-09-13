@@ -11,14 +11,40 @@ body {
 	color: black;
 	background-color: white;
 }
-h1 {
-	font-weight: 500;
-	@apply sm:text-5xl text-4xl
-}
-h4 {
-	font-weight: 500;
-	font-size: 24px;
-	line-height: 28px;
+@layer components {
+	h1 {
+		font-weight: 500;
+		@apply sm:text-5xl text-4xl;
+	}
+	h2 {
+		font-weight: 400;
+		@apply sm:text-4xl text-3xl;
+	}
+	h3 {
+		font-weight: 400;
+		@apply sm:text-3xl text-2xl;
+	}
+	h4 {
+		font-weight: 400;
+		@apply sm:text-2xl text-xl;
+	}
+	label {
+		color: rgb(55 65 81);
+		@apply block mb-2;
+	}
+
+	td {
+		@apply text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap;
+	}
+	th {
+		@apply text-sm font-medium text-gray-900 px-6 py-4 text-left select-none;
+	}
+	.primary-btn {
+		@apply bg-blue-500 hover:bg-blue-700 rounded text-white px-4 py-2;
+	}
+	.form-error {
+		@apply text-red-500 text-xs italic;
+	}
 }
 
 a {
@@ -30,24 +56,10 @@ a {
 	box-sizing: border-box;
 }
 
-input {
-	@apply shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none;
-}
-
-label {
-	color: rgb(55 65 81);
-	@apply block mb-2;
-}
-
-td {
-	@apply text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap;
-}
-th {
-	@apply text-sm font-medium text-gray-900 px-6 py-4 text-left select-none;
-}
-.primary-btn {
-	@apply bg-blue-500 hover:bg-blue-700 rounded text-white px-3 py-2;
-}
-.form-error {
-	@apply text-red-500 text-xs italic;
+.arrow-down {
+	width: 0;
+	height: 0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid black;
 }

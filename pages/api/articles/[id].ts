@@ -2,13 +2,12 @@ import nc from 'next-connect'
 import Article from 'models/Article'
 import auth from 'middleware/auth'
 import dbConnect from 'lib/dbConnect.ts'
-
 import type { ArticleProps, NextApiRequestWithUser } from 'types'
 import type { NextApiResponse } from 'next'
 
 export const getArticle = async (id: string | string[]) => {
 	await dbConnect()
-	return await Article.findById(id)
+	return (await Article.findById(id)) as ArticleProps
 }
 
 const handler = nc<NextApiRequestWithUser, NextApiResponse>()

@@ -1,15 +1,15 @@
 import Image from 'next/image'
 import { useRef, useMemo } from 'react'
-import { ImageProps } from './ArticleForm'
+import { ImageProps } from './forms/ArticleForm'
 
 export const ImageHandler = ({
 	image,
 	setImage,
-	errors,
+	className,
 }: {
 	image: ImageProps
 	setImage: React.Dispatch<React.SetStateAction<ImageProps>>
-	errors: any
+	className?: string
 }) => {
 	const inputRef = useRef(null)
 	const url = useMemo(() => {
@@ -23,15 +23,14 @@ export const ImageHandler = ({
 		setImage(imageData)
 	}
 
-	const handleClick = (e: React.FormEvent<HTMLButtonElement>) => {
+	const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
 		e.preventDefault()
-		if (!inputRef.current) return
-		;(inputRef.current as any).click()
+		if (inputRef.current) (inputRef.current as any).click()
 	}
 
 	return (
-		<>
-			<label>Featured image</label>
+		<div className={`${className}`}>
+			<label>Featured image *</label>
 			<input
 				ref={inputRef}
 				type="file"
@@ -40,15 +39,14 @@ export const ImageHandler = ({
 				accept="image/png, image/jpeg"
 				onChange={handleFileInputChange}
 			/>
-			<button onClick={handleClick} className="rounded bg-gray-600 hover:bg-gray-700 text-white px-2 py-0.5">
-				Upload an image
+			<button onClick={handleClick} className="btn btn-sm">
+				Choose an image
 			</button>
-			<p className="form-error mb-2">{errors.image}</p>
 			{image && url && (
-				<div className="w-80">
-					<Image height={1} width={1} layout="responsive" objectFit="cover" src={url} alt="not found" />
+				<div className="w-80 mt-2">
+					<Image height={100} width={100} layout="responsive" objectFit="cover" src={url} alt="not found" />
 				</div>
 			)}
-		</>
+		</div>
 	)
 }

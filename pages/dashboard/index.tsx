@@ -1,16 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useRouter } from 'next/router'
-import axios from 'axios'
 import _ from 'lodash'
-import toast from 'react-hot-toast'
-import { requireAuthentication } from 'api-lib/middleware/requireAuth'
+import { requireAuthentication } from 'middleware/requireAuth'
 import Layout from '@components/Layout'
-import SortingTable from '@components/articles/SortingTable'
-import type { GetServerSideProps, NextPage } from 'next'
-import type { ArticleProps, ArticleKey } from 'types'
 import { getArticles } from '@pages/api/articles'
+import SortableTable from '@components/articles/SortableTable'
+import type { GetServerSideProps, NextPage } from 'next'
+import type { ArticleProps } from 'types'
 
-const Dashboard: NextPage<{ data: ArticleProps[] }> = ({ data }) => {
+const Dashboard: NextPage<{ articles: ArticleProps[] }> = ({ articles }) => {
 	const Router = useRouter()
 	const navigate = () => {
 		Router.push('dashboard/create')
@@ -18,26 +16,30 @@ const Dashboard: NextPage<{ data: ArticleProps[] }> = ({ data }) => {
 
 	return (
 		<Layout>
-			<div className="flex sm:flex-row flex-col items-center my-20">
+			<div className="flex md:flex-row flex-col items-start md:items-center my-20">
 				<h1>My Articles</h1>
 
-				<button className="ml-10 mt-4 sm:mt-0 primary-btn" onClick={navigate}>
+				<button className="md:ml-10 mt-6 md:mt-0 primary-btn" onClick={navigate}>
 					Create new article
 				</button>
 			</div>
-			<SortingTable DATA={data} />
+			<SortableTable tableData={articles} />
 		</Layout>
 	)
 }
 
 export default Dashboard
 
-export const getServerSideProps: GetServerSideProps = requireAuthentication(async () => {
+export const getServerSideProps: GetServerSideProps = requireAuthentication(async (ctx) => {
+	//FIXME: type gssp properly so ctx is not any
+	const { username } = (ctx as any).user
+
 	try {
-		const data: ArticleProps[] = JSON.parse(JSON.stringify(await getArticles()))
+		const data: ArticleProps[] = JSON.parse(JSON.stringify(await getArticles(username)))
+		const articles = data.map(({ comments, ...rest }) => ({ ...rest, comments: comments.length }))
 
 		return {
-			props: { data }, // will be passed to the page component as props
+			props: { articles }, // will be passed to the page component as props
 		}
 	} catch (e) {
 		console.log(e)

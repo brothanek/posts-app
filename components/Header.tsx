@@ -3,28 +3,40 @@ import Image from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { useAuth } from 'contexts/AuthContext'
 import WithLink from './WithLink'
+import UserBar from './UserBar'
 
 interface ActiveLinkProps extends LinkProps {
 	children: React.ReactNode
 	activeColor?: string
 	unusedColor?: string
+	className?: string
 }
 
-function ActiveLink({ children, href, activeColor = 'black', unusedColor = 'gray', ...rest }: ActiveLinkProps) {
+export function ActiveLink({
+	children,
+	href,
+	activeColor = 'black',
+	unusedColor = 'gray',
+	className = '',
+	...rest
+}: ActiveLinkProps) {
 	const Router = useRouter()
 
 	const color = Router.asPath === href ? activeColor : unusedColor
 
 	return (
 		<Link href={href} {...rest}>
-			<a className="ml-5 hover:opacity-70" style={{ color }}>
+			<a className={`hover:opacity-70 ${className}`} style={{ color }}>
 				{children}
 			</a>
 		</Link>
 	)
 }
+
 const Header = () => {
-	const { user } = useAuth()
+	const {
+		user: { authenticated },
+	} = useAuth()
 
 	return (
 		<header>
@@ -34,33 +46,28 @@ const Header = () => {
 						<Image height={'44'} width={'39'} src="/logo.svg" alt="logo" />
 					</WithLink>
 
-					<div className="ml-5 hidden md:flex">
-						<ActiveLink href={'/'}>
+					<div className="hidden md:flex">
+						<ActiveLink className="ml-5 " href={'/'}>
 							<span>Recent Articles</span>
 						</ActiveLink>
-						<ActiveLink href="/about">
+						<ActiveLink className="ml-5 " href="/about">
 							<span>About</span>
 						</ActiveLink>
 					</div>
 
 					<div className="absolute right-0">
-						{user ? (
-							<div className="flex">
-								<ActiveLink activeColor="#2B7EFB" unusedColor="black" href={'/dashboard'}>
-									<span>My Articles</span>
-								</ActiveLink>
-								<ActiveLink activeColor="#2B7EFB" unusedColor="black" href={'/dashboard/create'}>
-									<span>Create Article</span>
-								</ActiveLink>
-							</div>
-						) : (
-							<Link href={'/auth'}>
-								<a className="flex">
-									<span className="text-blue">Log in</span>
-									<Image height={'24'} width={'24'} src="/arrow-right.svg" alt="logo" />
-								</a>
-							</Link>
-						)}
+						<div className="flex items-center">
+							{authenticated ? (
+								<UserBar />
+							) : (
+								<Link href={'/auth'}>
+									<a className="flex">
+										<span className="text-blue">Log in</span>
+										<Image height={'24'} width={'24'} src="/arrow-right.svg" alt="logo" />
+									</a>
+								</Link>
+							)}
+						</div>
 					</div>
 				</div>
 			</nav>
