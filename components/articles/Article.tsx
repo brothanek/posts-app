@@ -38,7 +38,7 @@ const Article = ({ data }: { data: ArticleProps }) => {
 				</div>
 			)}
 
-			<ReactMarkdown className="text-lg mt-10">{content}</ReactMarkdown>
+			<ReactMarkdown className="text-lg mt-10 whitespace-pre-wrap">{content}</ReactMarkdown>
 			<Comments comments={comments} articleId={_id || ''} />
 		</div>
 	)
