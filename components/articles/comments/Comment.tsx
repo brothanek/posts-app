@@ -48,7 +48,7 @@ const Comment = ({
 	}
 
 	return (
-		<div className="flex mt-4 items-start">
+		<div className="flex mt-4 items-start overflow-scroll pb-4">
 			<Avatar username={author} />
 			<div className="max-w-md">
 				<div className="flex items-center">
@@ -65,7 +65,7 @@ const Comment = ({
 					)}
 				</div>
 
-				<p className="text-sm whitespace-pre overflow-scroll min-h-12">{content}</p>
+				<p className="text-sm whitespace-pre">{content}</p>
 			</div>
 		</div>
 	)
