@@ -1,24 +1,25 @@
+import React, { useMemo, useState } from 'react'
 import _ from 'lodash'
 import axios from 'axios'
 import Link from 'next/link'
 import { useGlobalFilter, useSortBy, useTable } from 'react-table'
-import React, { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { FiEdit2 } from 'react-icons/fi'
 import { MdArrowDownward, MdArrowUpward } from 'react-icons/md'
 import { FormattedDate } from 'react-intl'
 import WithLink from '@components/WithLink'
-import type { Article, ArticleKey } from 'types'
+import type { ArticleProps, ArticleKey } from 'types'
 
 const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
 	{ accessor: 'title', Header: 'Article Title' },
 	{ accessor: 'perex', Header: 'Perex' },
+	{ accessor: 'comments', Header: 'Comments #' },
 	{ accessor: 'createdAt', Header: 'Created at' },
 ]
 
-export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
-	const [articles, setArticles] = useState(DATA)
+export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] }) => {
+	const [articles, setArticles] = useState(tableData || [])
 	const columns = useMemo(() => COLUMNS, [])
 	const data = useMemo(() => articles, [articles])
 
@@ -26,23 +27,31 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 		{
 			columns,
 			data,
+			initialState: {
+				sortBy: [
+					{
+						id: 'createdAt',
+						desc: true,
+					},
+				],
+			},
 		},
 		useGlobalFilter,
 		useSortBy,
 	)
 
-	const deleteArticle = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
+	const deleteArticle = async (
+		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		{ imageId, articleId }: { imageId: string; articleId: string },
+	) => {
 		event.preventDefault()
 		if (!window.confirm('Are you sure to delete this article? This action is irreversible.')) return
 		try {
-			const { status, data } = await axios.delete(`/api/articles/${id}`)
+			const { data } = await axios.delete(`/api/articles/${articleId}`)
+			await axios.delete(`/api/images/${imageId}`)
 
-			if (status == 200) {
-				setArticles((arr) => _.filter(arr, ({ articleId }) => articleId !== id))
-				toast.success(data.message)
-			} else {
-				toast.error(data.message)
-			}
+			setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
+			toast.success(data.message)
 		} catch (e) {
 			console.log(e)
 			toast.error('Something went wrong, please try again later')
@@ -56,9 +65,9 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 
 	return (
 		<div className="flex flex-col">
-			<input className="max-w-sm mb-2" placeholder="Search" onChange={handleFilterInputChange} />
-			<div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-				<div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+			<input className="input input-bordered max-w-sm mb-2" placeholder="Search" onChange={handleFilterInputChange} />
+			<div className="overflow-x-auto lg:-mx-8">
+				<div className="py-2 inline-block min-w-full">
 					<div className="overflow-x">
 						<table className="max-w-full" {...getTableProps()}>
 							<thead className="border-b">
@@ -81,10 +90,17 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 								))}
 							</thead>
 							<tbody {...getTableBodyProps()}>
+								{rows.length === 0 && (
+									<tr>
+										<td colSpan={COLUMNS.length + 1} className="text-center">
+											No articles found
+										</td>
+									</tr>
+								)}
 								{rows.map((row) => {
 									prepareRow(row)
-									const { articleId } = row.original
-									const link = `articles/${articleId}/view`
+									const { _id, cloudinary_img } = row.original
+									const link = `articles/${_id}/view`
 									return (
 										// eslint-disable-next-line react/jsx-key
 										<tr {...row.getRowProps()} className="border-b hover:bg-gray-100">
@@ -100,7 +116,7 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 												}
 												return (
 													// eslint-disable-next-line react/jsx-key
-													<td {...cell.getCellProps()}>
+													<td className="max-w-xs truncate" {...cell.getCellProps()}>
 														<WithLink className="hover:text-blue-500" href={link}>
 															{cell.render('Cell')}
 														</WithLink>
@@ -111,12 +127,16 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 											<td>
 												<ul className="flex">
 													<li>
-														<button onClick={(e) => deleteArticle(e, articleId)}>
+														<button
+															onClick={(e) =>
+																deleteArticle(e, { articleId: _id || '', imageId: cloudinary_img?.id || '' })
+															}
+														>
 															<AiOutlineDelete size="22" />
 														</button>
 													</li>
 													<li className="ml-3">
-														<Link href={`articles/${articleId}/edit`}>
+														<Link href={`articles/${_id}/edit`}>
 															<a>
 																<FiEdit2 size="20" />
 															</a>
@@ -136,4 +156,4 @@ export const SortingTable = ({ DATA }: { DATA: Article[] }) => {
 	)
 }
 
-export default SortingTable
+export default SortableTable
