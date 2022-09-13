@@ -22,7 +22,7 @@ const Edit: NextPage<{ article: ArticleProps; username: string }> = ({ article, 
 		try {
 			const { data } = await axios.patch(`/api/articles/${article._id}`, { ...inputs, author: username })
 			//delete an old image
-			if (article.cloudinary_img?.id) {
+			if (inputs.cloudinary_img?.id && article.cloudinary_img?.id) {
 				axios.delete(`/api/images/${article.cloudinary_img.id}`)
 			}
 			Router.push('/dashboard')
