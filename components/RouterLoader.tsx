@@ -3,7 +3,7 @@ import { useRouter } from 'next/dist/client/router'
 
 export const Loader = () => {
 	return (
-		<div className="fixed bottom-8 right-8">
+		<div className="fixed bottom-8 right-8" data-cy="loader">
 			<div className="h-12 w-12 block rounded-full border-8 border-t-blue-300 animate-spin" />
 		</div>
 	)

@@ -25,7 +25,7 @@ const UserBar = ({ className = '' }: { className?: string }) => {
 	} = useAuth()
 
 	return (
-		<ul className="flex items-center">
+		<ul className="flex items-center" data-cy="user-bar">
 			<li className="hidden lg:block">
 				<UserLinks />
 			</li>

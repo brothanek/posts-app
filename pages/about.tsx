@@ -53,7 +53,7 @@ const About: NextPage = () => {
 				</ul>
 				<div className="divider w-1/2 self-center" />
 				<h4>
-					GitHub
+					GitHub{' '}
 					<a
 						href="https://github.com/brothanek/fullstack-exercise"
 						className="text-blue-500"
