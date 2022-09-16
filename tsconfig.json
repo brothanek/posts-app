@@ -23,6 +23,14 @@
 		"incremental": true
 		// "noUnusedLocals": true
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "lib/session.js"],
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		"lib/session.js",
+		"setup-jest.js",
+		"__tests__/snapshot.jsx",
+		"__tests__/index.test.js"
+	],
 	"exclude": ["node_modules"]
 }
