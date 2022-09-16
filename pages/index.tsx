@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import { getArticles } from './api/articles'
-import Layout from '@components/Layout'
-import { ArticlePreview } from '@components/articles/ArticlePreview'
+import Layout from 'components/Layout'
+import { ArticlePreview } from 'components/articles/ArticlePreview'
 import type { ArticleProps } from 'types'
 
 const ArticleList = ({ articles }: { articles: ArticleProps[] }) => {
@@ -30,7 +30,6 @@ export async function getStaticProps() {
 		const articles: ArticleProps[] = JSON.parse(JSON.stringify(await getArticles()))
 		return {
 			props: { articles }, // will be passed to the page component as props
-			revalidate: 10, // 10 seconds
 		}
 	} catch (e) {
 		console.log(e)

@@ -6,7 +6,7 @@ interface WithLinkProps extends LinkProps {
 	children?: React.ReactNode
 }
 
-const WithLink = ({ children, href, className, ...rest }: WithLinkProps) => {
+const WithLink = ({ children, href, className = '', ...rest }: WithLinkProps) => {
 	return (
 		<Link href={href} {...rest}>
 			<a className={`${className}`}>{children}</a>

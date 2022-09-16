@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import { FaReact, FaNodeJs } from 'react-icons/fa'
 import { SiTypescript, SiMongodb, SiNextdotjs, SiTailwindcss, SiPassport } from 'react-icons/si'
-import Layout from '@components/Layout'
+import Layout from 'components/Layout'
 
 const About: NextPage = () => {
 	return (

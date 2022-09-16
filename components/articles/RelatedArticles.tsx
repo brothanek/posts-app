@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import { LoaderIcon } from 'react-hot-toast'
-import WithLink from '@components/WithLink'
+import WithLink from 'components/WithLink'
 import { fetcher } from 'lib/utils'
 import type { ArticleProps } from 'types'
 

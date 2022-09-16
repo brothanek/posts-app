@@ -1,5 +1,5 @@
-import ArticleForm from '@components/forms/ArticleForm'
-import Layout from '@components/Layout'
+import ArticleForm from 'components/forms/ArticleForm'
+import Layout from 'components/Layout'
 import { requireAuthentication } from 'middleware/requireAuth'
 
 import type { GetServerSideProps, NextPage } from 'next'

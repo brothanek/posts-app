@@ -1,7 +1,7 @@
-import Layout from '@components/Layout'
-import { getArticle } from '@pages/api/articles/[id]'
-import { RelatedArticles } from '@components/articles/RelatedArticles'
-import Article from '@components/articles/Article'
+import Layout from 'components/Layout'
+import { getArticle } from 'pages/api/articles/[id]'
+import { RelatedArticles } from 'components/articles/RelatedArticles'
+import Article from 'components/articles/Article'
 import type { GetServerSideProps, NextPage } from 'next'
 import type { ArticleProps } from 'types'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { BiLogOut } from 'react-icons/bi'
-import { useAuth } from '@contexts/AuthContext'
+import { useAuth } from 'contexts/AuthContext'
 import { Avatar } from './Avatar'
 import { ActiveLink } from './Header'
 

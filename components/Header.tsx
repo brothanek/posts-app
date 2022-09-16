@@ -23,7 +23,7 @@ export function ActiveLink({
 }: ActiveLinkProps) {
 	const Router = useRouter()
 
-	const color = Router.asPath === href ? activeColor : unusedColor
+	const color = Router?.asPath === href ? activeColor : unusedColor
 
 	return (
 		<Link href={href} {...rest}>
