@@ -1,16 +1,15 @@
 import type { NextPage } from 'next'
 import { FaReact, FaNodeJs } from 'react-icons/fa'
 import { SiTypescript, SiMongodb, SiNextdotjs, SiTailwindcss, SiPassport } from 'react-icons/si'
-import Layout from '@components/Layout'
+import Layout from 'components/Layout'
 
 const About: NextPage = () => {
 	return (
 		<Layout>
 			<div className="flex flex-col items-center pt-4">
 				<h1 className="text-4xl font-bold mb-10">About</h1>
-				<h4 className="text-center ">Technologies used:</h4>
-
-				<ul className="my-1 text-2xl text-center">
+				<span>built with:</span>
+				<ul className="my-1 text-2xl text-center flex flex-col items-center">
 					<li className="flex items-center">
 						<span className="mr-2">Next.js</span>
 						<SiNextdotjs />
@@ -42,7 +41,7 @@ const About: NextPage = () => {
 
 					<li>
 						<a
-							href="https://github.com/brothanek/fullstack-exercise/blob/main/package.json"
+							href="https://github.com/brothanek/fullstack-exercise#readme"
 							className="text-base text-blue-500"
 							target="_blank"
 							rel="noreferrer"
@@ -60,11 +59,9 @@ const About: NextPage = () => {
 						target="_blank"
 						rel="noreferrer"
 					>
-						{' '}
 						repo
 					</a>
 				</h4>
-
 				<span className="mt-2">built by @brothanek</span>
 			</div>
 		</Layout>

@@ -2,13 +2,14 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { requireAuthentication } from 'middleware/requireAuth'
-import { getArticle } from '@pages/api/articles/[id]'
-import ArticleForm from '@components/forms/ArticleForm'
-import Layout from '@components/Layout'
+import { getArticle } from 'pages/api/articles/[id]'
+import ArticleForm from 'components/forms/ArticleForm'
+import Layout from 'components/Layout'
 import type { GetServerSideProps, NextPage } from 'next'
 import type { ArticleProps } from 'types'
 
 export interface PatchInputProps {
+	privateDoc: boolean
 	perex: string
 	title: string
 	content: string

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useAuth } from '@contexts/AuthContext'
-import { Avatar } from '@components/Avatar'
+import { Avatar } from 'components/Avatar'
 import type { CommentsState } from './Comments'
 
 export const CommentInput = ({

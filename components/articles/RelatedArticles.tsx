@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import { LoaderIcon } from 'react-hot-toast'
-import WithLink from '@components/WithLink'
+import WithLink from 'components/WithLink'
 import { fetcher } from 'lib/utils'
 import type { ArticleProps } from 'types'
 
@@ -11,8 +11,6 @@ const Message = ({ error }: { error?: string }) => {
 
 export const RelatedArticles = ({ currentId = '' }) => {
 	const { data, error } = useSWR<ArticleProps[]>('/api/articles', fetcher)
-
-	if (error) return <p className="form-error"></p>
 
 	return (
 		<div className="lg:w-1/3 w-full h-full pb-8">

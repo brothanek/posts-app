@@ -2,9 +2,9 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import _ from 'lodash'
 import { requireAuthentication } from 'middleware/requireAuth'
-import Layout from '@components/Layout'
-import { getArticles } from '@pages/api/articles'
-import SortableTable from '@components/articles/SortableTable'
+import Layout from 'components/Layout'
+import { getUserArticles } from 'pages/api/articles'
+import SortableTable from 'components/articles/SortableTable'
 import type { GetServerSideProps, NextPage } from 'next'
 import type { ArticleProps } from 'types'
 
@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = requireAuthentication(asyn
 	const { username } = (ctx as any).user
 
 	try {
-		const data: ArticleProps[] = JSON.parse(JSON.stringify(await getArticles(username)))
+		const data: ArticleProps[] = JSON.parse(JSON.stringify(await getUserArticles(username)))
 		const articles = data.map(({ comments, ...rest }) => ({ ...rest, comments: comments.length }))
 
 		return {

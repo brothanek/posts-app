@@ -36,6 +36,7 @@ const LoginForm = ({ setCreatingAcc }: { setCreatingAcc: (bool: boolean) => void
 									className="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 									type="text"
 									name="username"
+									data-cy="username"
 									placeholder="username"
 									onChange={handleChange}
 									onBlur={handleBlur}
@@ -50,6 +51,7 @@ const LoginForm = ({ setCreatingAcc }: { setCreatingAcc: (bool: boolean) => void
 									className="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 									type="password"
 									name="password"
+									data-cy="password"
 									placeholder="*****"
 									onChange={handleChange}
 									onBlur={handleBlur}
@@ -62,6 +64,7 @@ const LoginForm = ({ setCreatingAcc }: { setCreatingAcc: (bool: boolean) => void
 								<button
 									className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline mx-auto"
 									type="submit"
+									data-cy="submit"
 									disabled={isSubmitting}
 								>
 									{!isSubmitting ? 'Log In' : 'Loading...'}

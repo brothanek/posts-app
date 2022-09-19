@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import WithLink from '@components/WithLink'
-import AuthorAndDate from '@components/articles/AuthorAndDate'
+import WithLink from 'components/WithLink'
+import AuthorAndDate from 'components/articles/AuthorAndDate'
 import type { ArticleProps } from 'types'
 
 export const ArticlePreview = ({

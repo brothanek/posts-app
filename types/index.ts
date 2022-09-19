@@ -14,6 +14,7 @@ export interface SignInProps {
 export interface ArticleProps {
 	_id?: string
 	author: string
+	privateDoc: boolean
 	title: string
 	content: string
 	perex: string
@@ -23,6 +24,17 @@ export interface ArticleProps {
 	comments: CommentProps[]
 }
 export type ArticleKey = keyof ArticleProps
+
+export interface PaginatedArticles {
+	docs: ArticleProps[]
+	totalDocs: number
+	limit: number
+	page: number
+	totalPages: number
+	pagingCounter: number
+	hasPrevPage: boolean
+	hasNextPage: boolean
+}
 
 export interface CommentProps {
 	_id: string

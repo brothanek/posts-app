@@ -4,6 +4,7 @@ import Link, { LinkProps } from 'next/link'
 import { useAuth } from 'contexts/AuthContext'
 import WithLink from './WithLink'
 import UserBar from './UserBar'
+import { MdArticle } from 'react-icons/md'
 
 interface ActiveLinkProps extends LinkProps {
 	children: React.ReactNode
@@ -22,7 +23,7 @@ export function ActiveLink({
 }: ActiveLinkProps) {
 	const Router = useRouter()
 
-	const color = Router.asPath === href ? activeColor : unusedColor
+	const color = Router?.asPath === href ? activeColor : unusedColor
 
 	return (
 		<Link href={href} {...rest}>
@@ -41,9 +42,9 @@ const Header = () => {
 	return (
 		<header>
 			<nav className="flex justify-center fixed w-screen bg-nav border-1 z-50">
-				<div className="flex height-14 w-2/3 items-center relative">
+				<div className="flex height-14 w-2/3 items-center relative min-h-12">
 					<WithLink href={'/'}>
-						<Image height={'44'} width={'39'} src="/logo.svg" alt="logo" />
+						<MdArticle size={'25'} />
 					</WithLink>
 
 					<div className="hidden md:flex">

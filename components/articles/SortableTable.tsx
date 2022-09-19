@@ -8,7 +8,7 @@ import { AiOutlineDelete } from 'react-icons/ai'
 import { FiEdit2 } from 'react-icons/fi'
 import { MdArrowDownward, MdArrowUpward } from 'react-icons/md'
 import { FormattedDate } from 'react-intl'
-import WithLink from '@components/WithLink'
+import WithLink from 'components/WithLink'
 import type { ArticleProps, ArticleKey } from 'types'
 
 const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
