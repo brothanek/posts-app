@@ -11,8 +11,21 @@ export const getArticle = async (id: string | string[]) => {
 }
 
 const handler = nc<NextApiRequestWithUser, NextApiResponse>()
-	.get(async (req, res) => {
+	.use(auth)
+	.use(async (req, res, next) => {
+		// Article auth middleware
+		const { id } = req.query
 		await dbConnect()
+		const { privateDoc, author } = await Article.findById(id)
+		const isAuthor = author === req.user.username
+
+		if ((req.method === 'GET' && privateDoc && !isAuthor) || !isAuthor) {
+			return res.status(401).json({ success: false, error: 'Unauthorized' })
+		}
+		next()
+	})
+
+	.get(async (req, res) => {
 		const { id } = req.query
 		try {
 			if (!id) return res.status(400).json({ success: false, error: { message: 'No id provided' } })
@@ -23,19 +36,12 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 			res.status(400).json({ success: false, error })
 		}
 	})
-	.use(auth)
-	.use(async (req, res, next) => {
-		const { id } = req.query
-		const authCheck = req.user.username === (await Article.findById(id)).author
-		if (!authCheck) return res.status(400).json({ success: false, error: { message: 'Not authorized' } })
-		next()
-	})
 	.patch(async (req, res) => {
 		const { id } = req.query
-		const { title, content, perex, author, cloudinary_img } = req.body as ArticleProps
+		const { title, content, perex, privateDoc, cloudinary_img } = req.body as ArticleProps
 
 		try {
-			const article = await Article.findByIdAndUpdate(id, { title, content, perex, cloudinary_img })
+			const article = await Article.findByIdAndUpdate(id, { title, content, perex, cloudinary_img, privateDoc })
 			return res.status(200).json({ success: true, data: article, message: 'Article successfully updated' })
 		} catch (error) {
 			console.log(error)

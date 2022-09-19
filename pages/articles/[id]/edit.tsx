@@ -9,6 +9,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import type { ArticleProps } from 'types'
 
 export interface PatchInputProps {
+	privateDoc: boolean
 	perex: string
 	title: string
 	content: string

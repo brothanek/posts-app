@@ -14,6 +14,7 @@ export interface SignInProps {
 export interface ArticleProps {
 	_id?: string
 	author: string
+	privateDoc: boolean
 	title: string
 	content: string
 	perex: string

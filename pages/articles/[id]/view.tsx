@@ -4,6 +4,8 @@ import { RelatedArticles } from 'components/articles/RelatedArticles'
 import Article from 'components/articles/Article'
 import type { GetServerSideProps, NextPage } from 'next'
 import type { ArticleProps } from 'types'
+import { parseCookies } from 'lib/session'
+import { getLoginSession } from 'lib/auth'
 
 const View: NextPage<ArticleProps> = (article) => {
 	const { _id = '' } = article
@@ -29,10 +31,24 @@ export default View
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const id = ctx.query.id
+	const req = ctx.req as any
+	let user
 	try {
+		const cookies = parseCookies(req)
+		if (cookies.session) {
+			user = (await getLoginSession(cookies.session))?.passport?.user
+		}
 		const article: ArticleProps = JSON.parse(JSON.stringify(await getArticle(id!)))
-		console.log(article)
+		const { author, privateDoc } = article
 
+		if ((privateDoc && !user) || (privateDoc && user.username !== author)) {
+			return {
+				redirect: {
+					permanent: false,
+					destination: '/auth',
+				},
+			}
+		}
 		return {
 			props: article,
 		}

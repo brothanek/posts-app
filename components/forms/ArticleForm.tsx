@@ -6,8 +6,9 @@ import { useRouter } from 'next/router'
 import ReactMarkdown from 'react-markdown'
 import { uploadImage } from 'lib/calls'
 import { ImageHandler } from '../ImageHandler'
+import { FcAbout } from 'react-icons/fc'
 import type { ArticleProps } from 'types'
-import type { PatchInputProps } from 'pages/articles/[id]/edit'
+import type { PatchInputProps as ArticleInputProps } from 'pages/articles/[id]/edit'
 
 export type ImageProps = File | string
 
@@ -15,10 +16,11 @@ interface FormProps {
 	author?: string
 	title?: string
 	perex?: string
+	privateDoc?: boolean
 	content?: string
 	cloudinary_img?: { url?: string; id?: string }
 	formTitle?: string
-	submitCallback?: (inputs: PatchInputProps) => Promise<void> | null
+	submitCallback?: (inputs: ArticleInputProps) => Promise<void> | null
 }
 
 const handleImageUpload = async (image: ImageProps) => {
@@ -36,6 +38,7 @@ const ArticleForm: React.FC<FormProps> = ({
 	author = '',
 	title = '',
 	perex = '',
+	privateDoc = false,
 	content = '',
 	cloudinary_img = { url: '', id: '' },
 	formTitle = 'Create new article',
@@ -51,8 +54,8 @@ const ArticleForm: React.FC<FormProps> = ({
 	const Router = useRouter()
 
 	const handleSubmit = async (
-		inputs: PatchInputProps,
-		{ setSubmitting, setFieldError }: FormikHelpers<PatchInputProps>,
+		inputs: ArticleInputProps,
+		{ setSubmitting, setFieldError }: FormikHelpers<ArticleInputProps>,
 	) => {
 		if (submitCallback) {
 			try {
@@ -115,8 +118,10 @@ const ArticleForm: React.FC<FormProps> = ({
 		return errors
 	}
 
+	const tooltipMessage = 'This makes sure that only you can see this article'
+
 	return (
-		<Formik initialValues={{ title, perex, content }} validate={handleValidation} onSubmit={handleSubmit}>
+		<Formik initialValues={{ title, perex, content, privateDoc }} validate={handleValidation} onSubmit={handleSubmit}>
 			{({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
 				const titleError = touched.title && errors.title
 				return (
@@ -125,8 +130,22 @@ const ArticleForm: React.FC<FormProps> = ({
 							<h1>{formTitle}</h1>
 						</div>
 
+						<div className="flex mt-4 justify-end items-center">
+							<label className="mr-1">Private</label>
+							<div className="tooltip" data-tip={tooltipMessage}>
+								<FcAbout size={20} />
+							</div>
+							<input
+								name="privateDoc"
+								type="checkbox"
+								className="toggle toggle-secondary ml-4"
+								checked={values.privateDoc}
+								onChange={handleChange}
+							/>
+						</div>
+
 						<div className="mb-6 mt-10">
-							<label>Article title *</label>
+							<label htmlFor="title">Article title *</label>
 							<input
 								className={`input input-bordered w-full ${titleError && 'input-error'}`}
 								type="text"
@@ -144,7 +163,7 @@ const ArticleForm: React.FC<FormProps> = ({
 						</div>
 
 						<div className="mb-6">
-							<label>Perex</label>
+							<label htmlFor="perex">Perex</label>
 							<input
 								className="input input-bordered w-full"
 								type="text"
@@ -158,9 +177,9 @@ const ArticleForm: React.FC<FormProps> = ({
 						</div>
 						<div className="mb-6">
 							<div className="flex items-center">
-								<label>Content *</label>
+								<label htmlFor="content">Content *</label>
 								<label className="mr-4 ml-20"> Preview markdown:</label>
-								<input type="checkbox" className="toggle -mt-2" checked={markdown} onChange={toggleMarkdown} />
+								<input type="checkbox" className="toggle" checked={markdown} onChange={toggleMarkdown} />
 							</div>
 							<div className="h-56 mt-2">
 								{!markdown ? (
@@ -180,7 +199,7 @@ const ArticleForm: React.FC<FormProps> = ({
 								<p className="form-error">{touched.content && errors.content}</p>
 							</div>
 							<div className="flex justify-end">
-								<button className="btn bg-blue-500 mt-2" type="submit" disabled={isSubmitting}>
+								<button className="btn btn-secondary mt-2" type="submit" disabled={isSubmitting}>
 									{!isSubmitting ? 'Submit' : 'Loading...'}
 								</button>
 							</div>

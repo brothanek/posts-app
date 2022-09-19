@@ -9,16 +9,21 @@ export const getUserArticles = async (username: string) => {
 	await dbConnect()
 	return await Article.find({ author: username }).sort({ createdAt: -1 })
 }
-export const getArticles = async () => {
-	await dbConnect()
-	return await Article.find().sort({ createdAt: -1 })
-}
 
 const CONFIG = { page: '1', limit: '8', sort: { createdAt: 'desc' } }
+const query = { privateDoc: false }
+
+export const getArticles = async () => {
+	await dbConnect()
+	return await Article.find({
+		$or: [query],
+	}).sort({ createdAt: -1 })
+}
 
 export const getPaginatedArticles = async (options = CONFIG) => {
 	await dbConnect()
-	var myAggregate = Article.aggregate()
+	// find public articles
+	var myAggregate = Article.aggregate([{ $match: query }])
 	// @ts-ignore
 	return await Article.aggregatePaginate(myAggregate, options, function (err, results) {
 		if (err) {
@@ -62,11 +67,12 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 	})
 	.post(async (req, res) => {
 		try {
-			const { title, content, perex, cloudinary_img } = req.body as ArticleProps
+			const { title, content, perex, cloudinary_img, privateDoc } = req.body as ArticleProps
 			const article = await Article.create({
 				title,
 				content,
 				perex,
+				privateDoc,
 				author: req.user.username,
 				comments: [],
 				cloudinary_img,
