@@ -16,6 +16,12 @@ const customJestConfig = {
 		'^lib/(.*)$': '<rootDir>/lib/$1',
 		'^middleware/(.*)$': '<rootDir>/middleware/$1',
 		'^pages/(.*)$': '<rootDir>/pages/$1',
+		'^@components/(.*)$': '<rootDir>/components/$1',
+		'^@models/(.*)$': '<rootDir>/models/$1',
+		'^@contexts/(.*)$': '<rootDir>/contexts/$1',
+		'^@lib/(.*)$': '<rootDir>/lib/$1',
+		'^@middleware/(.*)$': '<rootDir>/middleware/$1',
+		'^@pages/(.*)$': '<rootDir>/pages/$1',
 	},
 	testEnvironment: 'jest-environment-jsdom',
 }

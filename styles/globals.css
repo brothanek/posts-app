@@ -30,7 +30,7 @@ body {
 	}
 	label {
 		color: rgb(55 65 81);
-		@apply block mb-2;
+		@apply block;
 	}
 
 	td {

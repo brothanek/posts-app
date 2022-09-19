@@ -85,8 +85,9 @@ const ArticleForm: React.FC<FormProps> = ({
 				Router.push('/dashboard')
 				toast.success(data.message || 'Article successfully uploaded')
 			} catch (e) {
+				console.log(e)
 				toast.error('Something went wrong')
-				await axios.delete(`/api/images/${imageId}`)
+				if (imageId) await axios.delete(`/api/images/${imageId}`)
 			} finally {
 				setSubmitting(false)
 			}

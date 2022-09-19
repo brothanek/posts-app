@@ -106,8 +106,15 @@ exports[`renders homepage unchanged 1`] = `
         Recent articles
       </h1>
       <div
-        class="flex flex-col items-center md:items-start"
-      />
+        class="flex items-center"
+      >
+        <span>
+          Loading
+        </span>
+        <div
+          class="go1858758034 ml-2"
+        />
+      </div>
     </div>
   </main>
 </div>

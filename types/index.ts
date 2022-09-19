@@ -24,6 +24,17 @@ export interface ArticleProps {
 }
 export type ArticleKey = keyof ArticleProps
 
+export interface PaginatedArticles {
+	docs: ArticleProps[]
+	totalDocs: number
+	limit: number
+	page: number
+	totalPages: number
+	pagingCounter: number
+	hasPrevPage: boolean
+	hasNextPage: boolean
+}
+
 export interface CommentProps {
 	_id: string
 	articleId: string
