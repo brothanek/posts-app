@@ -7,7 +7,6 @@ import type { NextApiRequestWithUser } from 'types'
 const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 	.use(auth)
 	.post(passport.authenticate('local'), async (req, res) => {
-		console.log(req.session)
 		const { username, id } = req.user
 		res.json({ username, id })
 	})

@@ -41,7 +41,6 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 		const { articleId } = req.body
 		try {
 			// delete comment from article
-			console.log(articleId, 'articleId')
 			const article = await Article.findById(articleId)
 			article.comments = article.comments.filter((comment: CommentProps) => comment._id != id)
 			await article.save()
