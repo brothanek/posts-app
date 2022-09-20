@@ -1,4 +1,5 @@
 import useSWR from 'swr'
+import { useState, useEffect } from 'react'
 import { ArticlePreview } from 'components/articles/ArticlePreview'
 import { usePagination } from 'lib/hooks'
 import { LoaderIcon } from 'react-hot-toast'
@@ -14,6 +15,12 @@ export const ArticleList = ({
 		...articlesConfig,
 		sort: articlesConfig.sort.createdAt,
 	})
+	// fix hydration issue in production
+	const [hydrated, setHydrated] = useState(false)
+	useEffect(() => {
+		setHydrated(true)
+	}, [])
+
 	const url = `${apiUrl}?limit=${limit}&page=${page}&sort=${sort}`
 	const { data, error } = useSWR<PaginatedArticles>(url, fetcher)
 	const loading = !data
@@ -31,6 +38,7 @@ export const ArticleList = ({
 		setLimit(value + '')
 	}
 
+	if (!hydrated) return null
 	if (error) return <p className="text-red-500">Something went wrong, please try again later</p>
 	if (loading)
 		return (
