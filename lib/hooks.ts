@@ -23,9 +23,7 @@ export const usePagination = (config: { page: string; limit: string; sort: strin
 		})
 	}, [page, limit, sort])
 
-	const pagination = useMemo(
-		() => ({ page, limit, sort, setPage, setLimit, setSort }),
-		[page, limit, sort, setPage, setLimit, setSort],
-	)
+	const pagination = { page, limit, sort, setPage, setLimit, setSort }
+
 	return pagination
 }
