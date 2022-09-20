@@ -14,9 +14,7 @@ export const ArticleList = ({
 		...articlesConfig,
 		sort: articlesConfig.sort.createdAt,
 	})
-
 	const url = `${apiUrl}?limit=${limit}&page=${page}&sort=${sort}`
-
 	const { data, error } = useSWR<PaginatedArticles>(url, fetcher)
 	const loading = !data
 	const maxPage = data?.totalPages || 1
@@ -25,15 +23,22 @@ export const ArticleList = ({
 		let index = nextPage
 		if (nextPage < 1) index = 1
 		if (nextPage > maxPage) index = maxPage
-		setPage(index)
+		setPage(index + '')
 	}
 
 	const handleLimitChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const value = Number(event.target.value)
-		setLimit(value)
+		setLimit(value + '')
 	}
 
 	if (error) return <p className="text-red-500">Something went wrong, please try again later</p>
+	if (loading)
+		return (
+			<div className="flex items-center">
+				<span>Loading</span>
+				<LoaderIcon className="ml-2" />
+			</div>
+		)
 
 	return (
 		<div className="flex flex-col items-center md:items-start">
@@ -63,16 +68,9 @@ export const ArticleList = ({
 				</div>
 			</div>
 			<div>
-				{loading ? (
-					<div className="flex items-center">
-						<span>Loading</span>
-						<LoaderIcon className="ml-2" />
-					</div>
-				) : (
-					(data?.docs || []).map((article) => {
-						return <ArticlePreview key={article._id} {...article} />
-					})
-				)}
+				{(data?.docs || []).map((article) => {
+					return <ArticlePreview key={article._id} {...article} />
+				})}
 			</div>
 			{/* Items per page */}
 			<div className="flex items-center pb-4">

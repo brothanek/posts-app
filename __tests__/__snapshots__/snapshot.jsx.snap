@@ -106,96 +106,14 @@ exports[`renders homepage unchanged 1`] = `
         Recent articles
       </h1>
       <div
-        class="flex flex-col items-center md:items-start"
+        class="flex items-center"
       >
-        <div>
-          <div
-            class="flex items-center w-full mb-4"
-          >
-            <div
-              class="flex justify-center"
-            >
-              <div
-                class="btn-group items-center"
-              >
-                <button
-                  class="btn btn-sm"
-                  disabled=""
-                >
-                  «
-                </button>
-                <div
-                  class="px-2"
-                >
-                  1 of 1
-                </div>
-                <button
-                  class="btn btn-sm"
-                  disabled=""
-                >
-                  »
-                </button>
-              </div>
-              <div
-                class="btn-group ml-4"
-              >
-                <button
-                  class="btn btn-sm btn-active"
-                >
-                  Newest
-                </button>
-                <button
-                  class="btn btn-sm false"
-                >
-                  Oldest
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div
-            class="flex items-center"
-          >
-            <span>
-              Loading
-            </span>
-            <div
-              class="go1858758034 ml-2"
-            />
-          </div>
-        </div>
+        <span>
+          Loading
+        </span>
         <div
-          class="flex items-center pb-4"
-        >
-          <select
-            class="select select-sm mr-2"
-          >
-            <option
-              value="2"
-            >
-              2
-            </option>
-            <option
-              value="4"
-            >
-              4
-            </option>
-            <option
-              value="8"
-            >
-              8
-            </option>
-            <option
-              value="16"
-            >
-              16
-            </option>
-          </select>
-          <label>
-            items per page
-          </label>
-        </div>
+          class="go1858758034 ml-2"
+        />
       </div>
     </div>
   </main>
