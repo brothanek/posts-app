@@ -31,6 +31,7 @@ export async function getStaticProps() {
 					[`${apiUrl}?limit=${limit}&page=${page}&sort=${sort.createdAt}`]: articles,
 				},
 			},
+			revalidate: 10, // 10 seconds
 		}
 	} catch (e) {
 		console.log(e)

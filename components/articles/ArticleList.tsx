@@ -1,10 +1,10 @@
+import { useMemo } from 'react'
 import useSWR from 'swr'
 import { ArticlePreview } from 'components/articles/ArticlePreview'
 import { usePagination } from 'lib/hooks'
 import { LoaderIcon } from 'react-hot-toast'
 import { fetcher } from 'lib/utils'
 import type { PaginatedArticles } from 'types'
-import { useMemo } from 'react'
 
 export const ArticleList = ({
 	apiUrl = '',
