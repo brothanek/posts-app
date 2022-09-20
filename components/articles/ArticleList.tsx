@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import useSWR from 'swr'
 import { ArticlePreview } from 'components/articles/ArticlePreview'
 import { usePagination } from 'lib/hooks'
@@ -16,9 +15,7 @@ export const ArticleList = ({
 		sort: articlesConfig.sort.createdAt,
 	})
 
-	const url = useMemo(() => {
-		return `${apiUrl}?limit=${limit}&page=${page}&sort=${sort}`
-	}, [limit, page, sort, apiUrl])
+	const url = `${apiUrl}?limit=${limit}&page=${page}&sort=${sort}`
 
 	const { data, error } = useSWR<PaginatedArticles>(url, fetcher)
 	const loading = !data
