@@ -61,7 +61,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	// Sign in
 	const signIn = useCallback(
 		async (credentials: SignInProps) => {
-			console.log('signIn')
 			try {
 				const { username, id } = (await axios.post(`/api/auth/login`, credentials)).data
 				setUser({ username, authenticated: id })

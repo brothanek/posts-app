@@ -4,6 +4,7 @@ import { usePagination } from 'lib/hooks'
 import { LoaderIcon } from 'react-hot-toast'
 import { fetcher } from 'lib/utils'
 import type { PaginatedArticles } from 'types'
+import { useMemo } from 'react'
 
 export const ArticleList = ({
 	apiUrl = '',
@@ -15,12 +16,13 @@ export const ArticleList = ({
 		sort: articlesConfig.sort.createdAt,
 	})
 
-	const { data, error } = useSWR<PaginatedArticles>(`${apiUrl}?page=${page}&limit=${limit}&sort=${sort}`, fetcher)
+	const url = useMemo(() => {
+		return `${apiUrl}?limit=${limit}&page=${page}&sort=${sort}`
+	}, [limit, page, sort, apiUrl])
+
+	const { data, error } = useSWR<PaginatedArticles>(url, fetcher)
 	const loading = !data
 	const maxPage = data?.totalPages || 1
-
-	// debug
-	console.log('ArticleList', limit, page, sort)
 
 	const handlePageChange = (nextPage: number) => {
 		let index = nextPage
@@ -35,13 +37,6 @@ export const ArticleList = ({
 	}
 
 	if (error) return <p className="text-red-500">Something went wrong, please try again later</p>
-	if (loading)
-		return (
-			<div className="flex items-center">
-				<span>Loading</span>
-				<LoaderIcon className="ml-2" />
-			</div>
-		)
 
 	return (
 		<div className="flex flex-col items-center md:items-start">
@@ -71,9 +66,16 @@ export const ArticleList = ({
 				</div>
 			</div>
 			<div>
-				{(data?.docs || []).map((article) => {
-					return <ArticlePreview key={article._id} {...article} />
-				})}
+				{loading ? (
+					<div className="flex items-center">
+						<span>Loading</span>
+						<LoaderIcon className="ml-2" />
+					</div>
+				) : (
+					(data?.docs || []).map((article) => {
+						return <ArticlePreview key={article._id} {...article} />
+					})
+				)}
 			</div>
 			{/* Items per page */}
 			<div className="flex items-center pb-4">

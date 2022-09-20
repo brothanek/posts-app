@@ -23,7 +23,6 @@ export const CommentInput = ({
 			const { data } = await axios.post('/api/comments', body)
 			setState((curState) => {
 				const newComments = [data.comment, ...curState.comments]
-				console.log(newComments)
 				return { ...curState, comments: newComments }
 			})
 			setContent('')

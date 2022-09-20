@@ -22,7 +22,6 @@ const handler = nc<NextApiRequest, NextApiResponse>().delete(async (req, res) =>
 
 	try {
 		const response = await deleteImage(id + '', CLOUDINARY_URL)
-		console.log(response)
 		return res.status(200).json({ success: true, message: 'Image deleted' })
 	} catch (e) {
 		console.log(e)
