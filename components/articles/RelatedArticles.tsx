@@ -23,7 +23,7 @@ export const RelatedArticles = ({ currentId = '' }) => {
 							.map(({ title, _id, perex }) => {
 								return (
 									<WithLink key={_id} href={`/articles/${_id}/view`}>
-										<div className="mt-4 hover:bg-gray-100 cursor-pointer overflow-scroll">
+										<div className="mt-4 hover:bg-gray-100 cursor-pointer">
 											<p className="line-clamp-2 text-xl font-light tracking-wide mb-1">{title}</p>
 											<p className="line-clamp-2">{perex}</p>
 										</div>

@@ -1,41 +1,22 @@
-import axios from 'axios'
-import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { requireAuthentication } from 'middleware/requireAuth'
 import { getArticle } from 'pages/api/articles/[id]'
 import ArticleForm from 'components/forms/ArticleForm'
 import Layout from 'components/Layout'
+import { updateArticle } from 'lib/calls'
 import type { GetServerSideProps, NextPage } from 'next'
-import type { ArticleProps } from 'types'
+import type { ArticleInputProps, ArticleProps } from 'types'
 
-export interface PatchInputProps {
-	privateDoc: boolean
-	perex: string
-	title: string
-	content: string
-	image?: string
-	cloudinary_img?: { url: string | undefined; id: string | undefined }
-}
-
-const Edit: NextPage<{ article: ArticleProps; username: string }> = ({ article, username }) => {
+const Edit: NextPage<{ article: ArticleProps }> = ({ article }) => {
 	const Router = useRouter()
-	const patchArticle = async (inputs: PatchInputProps) => {
-		try {
-			const { data } = await axios.patch(`/api/articles/${article._id}`, { ...inputs, author: username })
-			//delete an old image
-			if (inputs.cloudinary_img?.id && article.cloudinary_img?.id) {
-				axios.delete(`/api/images/${article.cloudinary_img.id}`)
-			}
-			Router.push('/dashboard')
-			toast.success(data?.message || 'Successfully updated')
-		} catch (e) {
-			console.log(e)
-			toast.error('Something went wrong')
-		}
+
+	const handleEdit = async (inputs: ArticleInputProps) => {
+		if (await updateArticle(inputs, article)) Router.push('/dashboard')
 	}
+
 	return (
 		<Layout>
-			<ArticleForm {...article} formTitle="Edit Article" submitCallback={patchArticle} />
+			<ArticleForm {...article} formTitle="Edit Article" submitCallback={handleEdit} />
 		</Layout>
 	)
 }

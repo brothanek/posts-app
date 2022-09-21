@@ -1,8 +1,7 @@
 import { Dispatch, SetStateAction, useState } from 'react'
-import axios from 'axios'
-import toast from 'react-hot-toast'
 import { useAuth } from '@contexts/AuthContext'
 import { Avatar } from 'components/Avatar'
+import { postComment } from 'lib/calls'
 import type { CommentsState } from './Comments'
 
 export const CommentInput = ({
@@ -16,26 +15,20 @@ export const CommentInput = ({
 	const [focused, setFocused] = useState(false)
 	const [content, setContent] = useState('')
 
-	const postComment = async () => {
-		const body = { content, articleId, author: user.username }
-
-		try {
-			const { data } = await axios.post('/api/comments', body)
-			setState((curState) => {
-				const newComments = [data.comment, ...curState.comments]
-				return { ...curState, comments: newComments }
-			})
-			setContent('')
-			toast.success(data.message || 'Success')
-		} catch (e: any) {
-			console.log(e)
-			toast.error(e.response.data.message || 'Something went wrong')
-		}
-	}
-	const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+	const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = async (e) => {
 		e.preventDefault()
 		if (!window.confirm('Do you want to submit your comment?')) return
-		postComment()
+
+		const comment = await postComment(articleId, content)
+		console.log(comment)
+
+		if (comment) {
+			setState((curState) => {
+				const newComments = [comment, ...curState.comments]
+				return { ...curState, comments: newComments }
+			})
+		}
+		setContent('')
 	}
 	const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = ({ target: { value } }) => {
 		setContent(value)

@@ -1,44 +1,30 @@
 import Image from 'next/image'
-import { useRef, useMemo } from 'react'
-import { ImageProps } from './forms/ArticleForm'
+import { useMemo, forwardRef } from 'react'
+import { ImageProps } from 'types'
 
-export const ImageHandler = ({
-	image,
-	setImage,
-	className,
-}: {
-	image: ImageProps
-	setImage: React.Dispatch<React.SetStateAction<ImageProps>>
-	className?: string
-}) => {
-	const inputRef = useRef(null)
+const Handler = (
+	{
+		image,
+		children,
+	}: {
+		image: ImageProps
+		children?: React.ReactNode
+	},
+	ref: any,
+) => {
 	const url = useMemo(() => {
 		if (typeof image === 'string') return image
 		return image && URL.createObjectURL(image)
 	}, [image])
 
-	const handleFileInputChange = async ({ target }: React.FormEvent<HTMLInputElement>) => {
-		if (!target) return
-		const imageData = (target as any).files[0]
-		setImage(imageData)
-	}
-
 	const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
 		e.preventDefault()
-		if (inputRef.current) (inputRef.current as any).click()
+		if (ref.current) ref.current.click()
 	}
 
 	return (
-		<div className={`${className}`}>
-			<label>Featured image *</label>
-			<input
-				ref={inputRef}
-				type="file"
-				name="image"
-				className="hidden"
-				accept="image/png, image/jpeg"
-				onChange={handleFileInputChange}
-			/>
+		<div>
+			{children}
 			<button onClick={handleClick} className="btn btn-sm">
 				Choose an image
 			</button>
@@ -50,3 +36,4 @@ export const ImageHandler = ({
 		</div>
 	)
 }
+export const ImageHandler = forwardRef(Handler)

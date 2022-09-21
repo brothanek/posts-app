@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import AuthorAndDate from './AuthorAndDate'
-import { Comments } from './comments/Comments'
+import { Comments } from '../comments/Comments'
 import type { ArticleProps } from 'types'
 
 const Article = ({ data }: { data: ArticleProps }) => {
