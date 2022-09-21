@@ -1,5 +1,7 @@
 import type { NextApiRequest } from 'next'
 
+export type ImageProps = File | string
+
 export interface SignUpProps {
 	username: string
 	password: string
@@ -13,7 +15,7 @@ export interface SignInProps {
 
 export interface ArticleProps {
 	_id?: string
-	author: string
+	author?: string
 	privateDoc: boolean
 	title: string
 	content: string
@@ -22,6 +24,14 @@ export interface ArticleProps {
 	updatedAt?: string
 	createdAt?: string
 	comments: CommentProps[]
+}
+export interface ArticleInputProps {
+	privateDoc: boolean
+	perex: string
+	title: string
+	content: string
+	image: ImageProps
+	cloudinary_img?: { url: string | undefined; id: string | undefined }
 }
 export type ArticleKey = keyof ArticleProps
 

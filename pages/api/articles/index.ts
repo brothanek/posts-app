@@ -59,12 +59,6 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 		}
 	})
 	.use(auth)
-	.use(async (req, res, next) => {
-		const { id } = req.query
-		const authCheck = req.user.username === req.body.author
-		if (!authCheck) return res.status(400).json({ success: false, error: { message: 'Not authorized' } })
-		next()
-	})
 	.post(async (req, res) => {
 		try {
 			const { title, content, perex, cloudinary_img, privateDoc } = req.body as ArticleProps

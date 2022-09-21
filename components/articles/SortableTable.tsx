@@ -1,20 +1,20 @@
 import React, { useMemo, useState } from 'react'
 import _ from 'lodash'
-import axios from 'axios'
 import Link from 'next/link'
 import { useGlobalFilter, useSortBy, useTable } from 'react-table'
-import toast from 'react-hot-toast'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { FiEdit2 } from 'react-icons/fi'
 import { MdArrowDownward, MdArrowUpward } from 'react-icons/md'
 import { FormattedDate } from 'react-intl'
 import WithLink from 'components/WithLink'
 import type { ArticleProps, ArticleKey } from 'types'
+import { deleteArticle } from 'lib/calls'
 
 const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
 	{ accessor: 'title', Header: 'Article Title' },
 	{ accessor: 'perex', Header: 'Perex' },
 	{ accessor: 'comments', Header: 'Comments #' },
+	{ accessor: 'privateDoc', Header: 'Private' },
 	{ accessor: 'createdAt', Header: 'Created at' },
 ]
 
@@ -40,22 +40,13 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 		useSortBy,
 	)
 
-	const deleteArticle = async (
+	const handleDelete = async (
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 		{ imageId, articleId }: { imageId: string; articleId: string },
 	) => {
 		event.preventDefault()
 		if (!window.confirm('Are you sure to delete this article? This action is irreversible.')) return
-		try {
-			const { data } = await axios.delete(`/api/articles/${articleId}`)
-			await axios.delete(`/api/images/${imageId}`)
-
-			setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
-			toast.success(data.message)
-		} catch (e) {
-			console.log(e)
-			toast.error('Something went wrong, please try again later')
-		}
+		if (await deleteArticle(articleId, imageId)) setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
 	}
 
 	const handleFilterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,6 +104,14 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 															</WithLink>
 														</td>
 													)
+												} else if (cell.column.id == 'privateDoc') {
+													return (
+														<td {...cell.getCellProps()}>
+															<WithLink className="hover:text-blue-500" href={link}>
+																{cell.value ? 'Yes' : 'No'}
+															</WithLink>
+														</td>
+													)
 												}
 												return (
 													// eslint-disable-next-line react/jsx-key
@@ -129,7 +128,7 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 													<li>
 														<button
 															onClick={(e) =>
-																deleteArticle(e, { articleId: _id || '', imageId: cloudinary_img?.id || '' })
+																handleDelete(e, { articleId: _id || '', imageId: cloudinary_img?.id || '' })
 															}
 														>
 															<AiOutlineDelete size="22" />

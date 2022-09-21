@@ -1,16 +1,12 @@
 import React, { useState } from 'react'
 import { Formik, FormikHelpers } from 'formik'
-import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import ReactMarkdown from 'react-markdown'
-import { uploadImage } from 'lib/calls'
+import { postArticle, uploadImage } from 'lib/calls'
 import { ImageHandler } from '../ImageHandler'
 import { FcAbout } from 'react-icons/fc'
-import type { ArticleProps } from 'types'
-import type { PatchInputProps as ArticleInputProps } from 'pages/articles/[id]/edit'
-
-export type ImageProps = File | string
+import type { ArticleInputProps, ImageProps } from 'types'
 
 interface FormProps {
 	author?: string
@@ -23,19 +19,30 @@ interface FormProps {
 	submitCallback?: (inputs: ArticleInputProps) => Promise<void> | null
 }
 
-const handleImageUpload = async (image: ImageProps) => {
-	if (typeof image === 'string') return
-
-	const { url, id } = (await uploadImage(image)) || { url: '', id: '' }
-	if (!url || !id) {
-		toast.error('Image upload failed')
-		return
+const handleValidation = (values: { title: string; perex: string; content: string; image: ImageProps }) => {
+	const errors: any = {}
+	if (!values.title) {
+		errors.title = 'Required'
 	}
-	return { url, id } as { url: string; id: string }
+	if (values.title.length > 80) {
+		errors.title = 'Title must be less than 80 characters'
+	}
+	if (values.perex.length > 200) {
+		errors.perex = 'Perex must be less than 200 characters'
+	}
+	if (!values.image) {
+		errors.image = 'Image is required'
+	}
+	if (values.content.length > 3000) {
+		errors.content = 'Perex must be less than 3000 characters'
+	}
+	if (!values.content) {
+		errors.content = 'Required'
+	}
+	return errors
 }
 
 const ArticleForm: React.FC<FormProps> = ({
-	author = '',
 	title = '',
 	perex = '',
 	privateDoc = false,
@@ -44,86 +51,47 @@ const ArticleForm: React.FC<FormProps> = ({
 	formTitle = 'Create new article',
 	submitCallback = null,
 }) => {
-	const [image, setImage] = useState<ImageProps>(cloudinary_img?.url || '')
+	const Router = useRouter()
 	const [markdown, setMarkdown] = useState(false)
+	const imageRef = React.useRef<HTMLInputElement>(null)
 
 	const toggleMarkdown = () => {
 		setMarkdown((cur) => !cur)
 	}
 
-	const Router = useRouter()
-
-	const handleSubmit = async (
-		inputs: ArticleInputProps,
-		{ setSubmitting, setFieldError }: FormikHelpers<ArticleInputProps>,
-	) => {
+	const handleSubmit = async (inputs: ArticleInputProps, { setSubmitting }: FormikHelpers<ArticleInputProps>) => {
 		if (submitCallback) {
-			try {
-				let body = inputs
-				if (image) {
-					body.cloudinary_img = await handleImageUpload(image)
-					await submitCallback(body)
-				} else {
-					return setFieldError('image', 'Image is required')
-				}
-			} catch (e) {
-				console.log(e)
-				toast.error('Something went wrong')
+			let body = inputs
+			if (typeof inputs.image !== 'string') {
+				//if image is not a string, it's a file
+				const cloudinary_img = await uploadImage(inputs.image)
+				body = { ...inputs, cloudinary_img }
 			}
+			await submitCallback(body)
 		} else {
-			if (!image) return setFieldError('image', 'Image is required')
-			let imageId
-			try {
-				const cloudinary_img = await handleImageUpload(image)
-				if (!cloudinary_img) return
-				imageId = cloudinary_img.id
-				const articleBody: ArticleProps = {
-					...inputs,
-					cloudinary_img,
-					author,
-					comments: [],
-				}
-				const { data } = await axios.post('/api/articles', articleBody)
-
+			const { success } = await postArticle(inputs)
+			if (success) {
 				Router.push('/dashboard')
-				toast.success(data.message || 'Article successfully uploaded')
-			} catch (e) {
-				console.log(e)
+				toast.success('Successfully created')
+			} else {
 				toast.error('Something went wrong')
-				if (imageId) await axios.delete(`/api/images/${imageId}`)
-			} finally {
-				setSubmitting(false)
 			}
 		}
-	}
 
-	const handleValidation = (values: { title: string; perex: string; content: string }) => {
-		const errors: any = {}
-		if (!values.title) {
-			errors.title = 'Required'
-		}
-		if (values.title.length > 80) {
-			errors.title = 'Title must be less than 80 characters'
-		}
-		if (values.perex.length > 200) {
-			errors.perex = 'Perex must be less than 200 characters'
-		}
-		if (values.content.length > 3000) {
-			errors.content = 'Perex must be less than 3000 characters'
-		}
-
-		if (!values.content) {
-			errors.content = 'Required'
-		}
-		return errors
+		setSubmitting(false)
 	}
 
 	const tooltipMessage = 'This makes sure that only you can see this article'
 
 	return (
-		<Formik initialValues={{ title, perex, content, privateDoc }} validate={handleValidation} onSubmit={handleSubmit}>
-			{({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
+		<Formik
+			initialValues={{ title, perex, content, privateDoc, image: (cloudinary_img?.url || '') as ImageProps }}
+			validate={handleValidation}
+			onSubmit={handleSubmit}
+		>
+			{({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting, setFieldValue }) => {
 				const titleError = touched.title && errors.title
+
 				return (
 					<form className="w-full max-w-xl m-auto mt-20" onSubmit={handleSubmit}>
 						<div className="w-full flex items-center md:items-start flex-col">
@@ -158,8 +126,20 @@ const ArticleForm: React.FC<FormProps> = ({
 							<p className="form-error">{titleError}</p>
 						</div>
 						<div className="mb-6">
-							<ImageHandler image={image} setImage={setImage} />
-							<p className="form-error">{(errors as any).image}</p>
+							<ImageHandler image={values.image} ref={imageRef}>
+								<label>Featured image *</label>
+								<input
+									ref={imageRef}
+									type="file"
+									name="image"
+									className="hidden"
+									accept="image/png, image/jpeg"
+									onChange={(event: any) => {
+										setFieldValue('image', event.currentTarget.files[0] as File)
+									}}
+								/>
+							</ImageHandler>
+							<p className="form-error">{touched.image && (errors as any).image}</p>
 						</div>
 
 						<div className="mb-6">
@@ -192,7 +172,7 @@ const ArticleForm: React.FC<FormProps> = ({
 										value={values.content}
 									/>
 								) : (
-									<ReactMarkdown className="shadow appearance-none rounded h-full w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-not-allowed overflow-scroll">
+									<ReactMarkdown className="whitespace-pre-wrap shadow appearance-none rounded h-full w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-not-allowed overflow-y-auto">
 										{values.content}
 									</ReactMarkdown>
 								)}

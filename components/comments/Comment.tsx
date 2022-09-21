@@ -1,10 +1,9 @@
-import axios from 'axios'
 import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { FormattedRelativeTime } from 'react-intl'
 import { Avatar } from 'components/Avatar'
 import { useAuth } from 'contexts/AuthContext'
+import { deleteComment } from 'lib/calls'
 import type { CommentsState } from './Comments'
 import type { CommentProps } from 'types'
 
@@ -34,21 +33,16 @@ const Comment = ({
 	const handleDelete: React.MouseEventHandler<HTMLButtonElement> = async (e) => {
 		e.preventDefault()
 		if (!window.confirm('Do you want to delete your comment?')) return
-		try {
-			await axios.delete(`/api/comments/${_id}`, { data: { articleId } })
-			setState((curState) => {
-				const newComments = curState.comments.filter((comment) => comment._id !== _id)
-				return { ...curState, comments: newComments }
-			})
 
-			toast.success('Comment deleted')
-		} catch (e: any) {
-			toast.error(e.response.data.message)
-		}
+		await deleteComment(_id, articleId)
+		setState((curState) => {
+			const newComments = curState.comments.filter((comment) => comment._id !== _id)
+			return { ...curState, comments: newComments }
+		})
 	}
 
 	return (
-		<div className="flex mt-4 items-start overflow-scroll pb-4">
+		<div className="flex mt-4 items-start pb-4">
 			<Avatar username={author} />
 			<div className="max-w-md">
 				<div className="flex items-center">
@@ -65,7 +59,7 @@ const Comment = ({
 					)}
 				</div>
 
-				<p className="text-sm whitespace-pre">{content}</p>
+				<p className="text-sm whitespace-pre truncate">{content}</p>
 			</div>
 		</div>
 	)
