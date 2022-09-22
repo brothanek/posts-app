@@ -98,9 +98,9 @@ const ArticleForm: React.FC<FormProps> = ({
 							<h1>{formTitle}</h1>
 						</div>
 
-						<div className="flex mt-4 justify-end items-center">
-							<label className="mr-1">Private</label>
-							<div className="tooltip" data-tip={tooltipMessage}>
+						<div className="flex mt-4 justify-center md:justify-end items-center">
+							<div className="tooltip flex items-center" data-tip={tooltipMessage}>
+								<label className="mr-1">Private</label>
 								<FcAbout size={20} />
 							</div>
 							<input

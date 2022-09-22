@@ -46,15 +46,16 @@ const Header = () => {
 					<WithLink href={'/'}>
 						<MdArticle size={'25'} />
 					</WithLink>
-
-					<div className="hidden md:flex">
-						<ActiveLink className="ml-5 " href={'/'}>
-							<span>Recent Articles</span>
-						</ActiveLink>
-						<ActiveLink className="ml-5 " href="/about">
-							<span>About</span>
-						</ActiveLink>
+					<div className="flex">
+						<div className="hidden md:inherit">
+							<ActiveLink className="ml-5 " href={'/'}>
+								<span>Recent Articles</span>
+							</ActiveLink>
+						</div>
 					</div>
+					<ActiveLink className="ml-5 " href="/about">
+						<span>About</span>
+					</ActiveLink>
 
 					<div className="absolute right-0">
 						<div className="flex items-center">

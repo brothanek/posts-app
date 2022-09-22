@@ -9,6 +9,7 @@ import { FormattedDate } from 'react-intl'
 import WithLink from 'components/WithLink'
 import type { ArticleProps, ArticleKey } from 'types'
 import { deleteArticle } from 'lib/calls'
+import { ConfirmDropdown } from '@components/ConfirmModal'
 
 const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
 	{ accessor: 'title', Header: 'Article Title' },
@@ -45,7 +46,6 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 		{ imageId, articleId }: { imageId: string; articleId: string },
 	) => {
 		event.preventDefault()
-		if (!window.confirm('Are you sure to delete this article? This action is irreversible.')) return
 		if (await deleteArticle(articleId, imageId)) setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
 	}
 
@@ -126,13 +126,14 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 											<td>
 												<ul className="flex">
 													<li>
-														<button
-															onClick={(e) =>
+														<ConfirmDropdown
+															hiddenContent="delete"
+															onConfirm={(e) =>
 																handleDelete(e, { articleId: _id || '', imageId: cloudinary_img?.id || '' })
 															}
 														>
 															<AiOutlineDelete size="22" />
-														</button>
+														</ConfirmDropdown>
 													</li>
 													<li className="ml-3">
 														<Link href={`articles/${_id}/edit`}>

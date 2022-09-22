@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { FormattedRelativeTime } from 'react-intl'
+import Linkify from 'linkify-react'
 import { Avatar } from 'components/Avatar'
 import { useAuth } from 'contexts/AuthContext'
 import { deleteComment } from 'lib/calls'
+import { ConfirmDropdown } from 'components/ConfirmModal'
 import type { CommentsState } from './Comments'
 import type { CommentProps } from 'types'
 
@@ -32,8 +34,6 @@ const Comment = ({
 
 	const handleDelete: React.MouseEventHandler<HTMLButtonElement> = async (e) => {
 		e.preventDefault()
-		if (!window.confirm('Do you want to delete your comment?')) return
-
 		await deleteComment(_id, articleId)
 		setState((curState) => {
 			const newComments = curState.comments.filter((comment) => comment._id !== _id)
@@ -44,22 +44,28 @@ const Comment = ({
 	return (
 		<div className="flex mt-4 items-start pb-4">
 			<Avatar username={author} />
-			<div className="max-w-md">
+			<div className="max-w-sm md:max-w-md ">
 				<div className="flex items-center">
 					<span className="font-bold text-sm">{author}</span>
 					<span className="ml-2 text-sm text-gray-500">
 						<FormattedRelativeTime value={dateDiff} numeric="auto" updateIntervalInSeconds={1} />
 					</span>
 					{author == user.username && (
-						<span className="ml-4">
-							<button onClick={handleDelete}>
+						<div className="ml-4">
+							<ConfirmDropdown hiddenContent="delete" onConfirm={handleDelete} direction="top">
 								<AiOutlineDelete size="16" />
-							</button>
-						</span>
+							</ConfirmDropdown>
+							{/* <button onClick={handleDelete}>
+								<AiOutlineDelete size="16" />
+							</button> */}
+						</div>
 					)}
 				</div>
-
-				<p className="text-sm whitespace-pre truncate">{content}</p>
+				<div className="whitespace-pre-line text-sm">
+					<Linkify tagName="p" options={{ truncate: 42 }}>
+						{content}
+					</Linkify>
+				</div>
 			</div>
 		</div>
 	)

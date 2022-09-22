@@ -17,7 +17,7 @@ export const Comments = (data: CommentsState) => {
 	}, [articleId, data])
 
 	return (
-		<div className="pt-7 pb-20">
+		<div className="pt-7 pb-20 w-full">
 			<h4>Comments</h4>
 
 			<CommentInput articleId={articleId} setState={setState} />

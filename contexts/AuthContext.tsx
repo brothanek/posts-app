@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 			try {
 				const { username, id } = (await axios.post(`/api/auth/login`, credentials)).data
 				setUser({ username, authenticated: id })
-				Router.push('/dashboard')
+				Router.back()
 				toast.success(username + ' was logged in')
 			} catch (error: any) {
 				if (error.response.status === 401) {
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		try {
 			await axios.post(`/api/auth/logout`)
 			setUser({ username: null, authenticated: false })
-			Router.push('/')
+			Router.reload()
 			toast.success(user?.username + ' logged out')
 		} catch (error) {
 			console.error(error)

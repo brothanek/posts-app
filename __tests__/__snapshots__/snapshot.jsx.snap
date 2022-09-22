@@ -32,27 +32,31 @@ exports[`renders homepage unchanged 1`] = `
           </svg>
         </a>
         <div
-          class="hidden md:flex"
+          class="flex"
         >
-          <a
-            class="hover:opacity-70 ml-5 "
-            href="/"
-            style="color: gray;"
+          <div
+            class="hidden md:inherit"
           >
-            <span>
-              Recent Articles
-            </span>
-          </a>
-          <a
-            class="hover:opacity-70 ml-5 "
-            href="/about"
-            style="color: gray;"
-          >
-            <span>
-              About
-            </span>
-          </a>
+            <a
+              class="hover:opacity-70 ml-5 "
+              href="/"
+              style="color: gray;"
+            >
+              <span>
+                Recent Articles
+              </span>
+            </a>
+          </div>
         </div>
+        <a
+          class="hover:opacity-70 ml-5 "
+          href="/about"
+          style="color: gray;"
+        >
+          <span>
+            About
+          </span>
+        </a>
         <div
           class="absolute right-0"
         >
