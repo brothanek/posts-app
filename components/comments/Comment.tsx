@@ -5,7 +5,6 @@ import Linkify from 'linkify-react'
 import { Avatar } from 'components/Avatar'
 import { useAuth } from 'contexts/AuthContext'
 import { deleteComment } from 'lib/calls'
-import { ConfirmDropdown } from 'components/ConfirmModal'
 import type { CommentsState } from './Comments'
 import type { CommentProps } from 'types'
 
@@ -52,12 +51,9 @@ const Comment = ({
 					</span>
 					{author == user.username && (
 						<div className="ml-4">
-							<ConfirmDropdown hiddenContent="delete" onConfirm={handleDelete} direction="top">
+							<button onClick={handleDelete}>
 								<AiOutlineDelete size="16" />
-							</ConfirmDropdown>
-							{/* <button onClick={handleDelete}>
-								<AiOutlineDelete size="16" />
-							</button> */}
+							</button>
 						</div>
 					)}
 				</div>

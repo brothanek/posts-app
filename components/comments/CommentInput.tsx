@@ -23,22 +23,21 @@ export const CommentInput = ({
 		e.preventDefault()
 
 		if (!authenticated) {
-			Router.push('/auth')
+			Router.push('/auth?redirect=back')
 			return
 		}
 		setLoading(true)
 		const comment = await postComment(articleId, content)
-		console.log(comment)
-
 		if (comment) {
-			setState((curState) => {
-				const newComments = [comment, ...curState.comments]
-				return { ...curState, comments: newComments }
-			})
+			setState((prev) => ({
+				...prev,
+				comments: [comment, ...prev.comments],
+			}))
+			setContent('')
 		}
-		setContent('')
 		setLoading(false)
 	}
+
 	const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = ({ target: { value } }) => {
 		setContent(value)
 	}
@@ -46,7 +45,7 @@ export const CommentInput = ({
 		<div className="flex mt-7 items-start">
 			<Avatar username={username || '?'} />
 			<div className="w-full">
-				<div className="">
+				<div>
 					<textarea
 						disabled={!authenticated}
 						className="textarea textarea-bordered max-w-md w-full max-h-80"
@@ -55,7 +54,11 @@ export const CommentInput = ({
 						onChange={handleChange}
 					/>
 				</div>
-				<button disabled={loading || !content} className="primary-btn text-sm mb-1" onClick={handleSubmit}>
+				<button
+					disabled={!!authenticated && (loading || !content)}
+					className="primary-btn text-sm mb-1"
+					onClick={handleSubmit}
+				>
 					{authenticated ? 'Add comment' : 'Login'}
 				</button>
 			</div>

@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 			try {
 				const { username, id } = (await axios.post(`/api/auth/login`, credentials)).data
 				setUser({ username, authenticated: id })
-				Router.back()
+
 				toast.success(username + ' was logged in')
 			} catch (error: any) {
 				if (error.response.status === 401) {
@@ -73,6 +73,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 				}
 				console.error(error)
 				handleError('Something went wrong')
+			}
+			// handle redirecting
+			const redirect = Router.query.redirect as string
+			if (redirect) {
+				if (redirect === 'back') {
+					Router.back()
+				} else {
+					Router.push(redirect)
+				}
+			} else {
+				Router.push('/dashboard')
 			}
 		},
 		[Router],
