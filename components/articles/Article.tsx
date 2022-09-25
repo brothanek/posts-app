@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import AuthorAndDate from './AuthorAndDate'
-import { Comments } from '../comments/Comments'
 import type { ArticleProps } from 'types'
+import { Comments } from 'components/comments/Comments'
 
 const Article = ({ data }: { data: ArticleProps }) => {
 	const [imageLoad, setImageLoad] = useState({ loading: true, error: false })

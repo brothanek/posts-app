@@ -2,10 +2,10 @@ import Layout from 'components/Layout'
 import { getArticle } from 'pages/api/articles/[id]'
 import { RelatedArticles } from 'components/articles/RelatedArticles'
 import Article from 'components/articles/Article'
-import type { GetServerSideProps, NextPage } from 'next'
-import type { ArticleProps } from 'types'
 import { parseCookies } from 'lib/session'
 import { getLoginSession } from 'lib/auth'
+import type { ArticleProps } from 'types'
+import type { GetServerSideProps, NextPage } from 'next'
 
 const View: NextPage<ArticleProps> = (article) => {
 	const { _id = '' } = article

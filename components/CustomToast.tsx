@@ -1,23 +1,24 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
+interface ToastOptions {
+	body?: React.ReactNode
+	className?: string
+	title: string
+	actions?: { confirm: React.ReactNode; cancel: React.ReactNode }
+	onConfirm?: (P: any) => void
+	initialOpen?: boolean
+}
+
 export const CustomToast = ({
 	body,
-	className,
+	className = '',
 	title,
-	actions: { confirm = 'Yes', cancel = 'No' },
+	actions = { confirm: 'Yes', cancel: 'No' },
 	onConfirm = () => {},
 	initialOpen = false,
 	modal = true,
-}: {
-	className?: string
-	title: string
-	body?: React.ReactNode
-	actions: { confirm: React.ReactNode; cancel: React.ReactNode }
-	onConfirm?: (P: any) => void
-	initialOpen?: boolean
-	modal?: boolean
-}) => {
+}: ToastOptions & { modal: any }) => {
 	const [open, setOpen] = useState(initialOpen)
 	const closeModal = () => {
 		setOpen(false)
@@ -36,10 +37,10 @@ export const CustomToast = ({
 						}}
 						className="btn"
 					>
-						{confirm}
+						{actions.confirm}
 					</button>
 					<button onClick={closeModal} className="btn btn-link">
-						{cancel}
+						{actions.cancel}
 					</button>
 				</div>
 			</div>
@@ -53,13 +54,7 @@ export const toastify = ({
 	actions = { confirm: 'Yes', cancel: 'No' },
 	onConfirm = () => {},
 	initialOpen = true,
-}: {
-	body?: React.ReactNode
-	title: string
-	actions?: { confirm: string; cancel: string }
-	onConfirm?: (P: any) => void
-	initialOpen?: boolean
-}) => {
+}: ToastOptions) => {
 	return toast.custom(
 		<CustomToast
 			modal={false}

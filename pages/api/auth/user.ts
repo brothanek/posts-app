@@ -1,8 +1,8 @@
 import nc from 'next-connect'
 import User from 'models/User'
 import auth from 'middleware/auth'
-import { NextApiResponse } from 'next'
 import bcrypt from 'bcrypt'
+import type { NextApiResponse } from 'next'
 import type { NextApiRequestWithUser } from 'types'
 
 const handler = nc<NextApiRequestWithUser, NextApiResponse>()
