@@ -8,7 +8,6 @@ import { MdArrowDownward, MdArrowUpward } from 'react-icons/md'
 import { FormattedDate } from 'react-intl'
 import WithLink from 'components/WithLink'
 import { deleteArticle } from 'lib/calls'
-import { toastify } from '@components/CustomToast'
 import type { ArticleProps, ArticleKey } from 'types'
 
 const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
@@ -41,19 +40,11 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 		useSortBy,
 	)
 
-	const handleDelete = async (
-		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-		{ imageId, articleId }: { imageId: string; articleId: string },
-	) => {
+	const handleDelete = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		const id = event.currentTarget.id
 		event.preventDefault()
-		toastify({
-			title: 'Delete article',
-			body: 'Are you sure you want to delete this article?',
-			onConfirm: async () => {
-				const deleted = await deleteArticle(articleId, imageId)
-				if (deleted) setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
-			},
-		})
+		const { data } = await deleteArticle(id)
+		if (data?.success) setArticles((arr) => _.filter(arr, ({ _id }) => _id !== id))
 	}
 	const handleFilterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.currentTarget
@@ -96,7 +87,7 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 								)}
 								{rows.map((row) => {
 									prepareRow(row)
-									const { _id, cloudinary_img } = row.original
+									const { _id } = row.original
 									const link = `articles/${_id}/view`
 									return (
 										// eslint-disable-next-line react/jsx-key
@@ -132,11 +123,7 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 											<td>
 												<ul className="flex">
 													<li>
-														<button
-															onClick={(e) =>
-																handleDelete(e, { articleId: _id || '', imageId: cloudinary_img?.id || '' })
-															}
-														>
+														<button id={_id} onClick={handleDelete}>
 															<AiOutlineDelete size="22" />
 														</button>
 													</li>
