@@ -56,24 +56,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}, [Router])
 
-	const handleError = (error: string) => toast.error(error)
-
 	// Sign in
 	const signIn = useCallback(
 		async (credentials: SignInProps) => {
-			try {
-				const { username, id } = (await axios.post(`/api/auth/login`, credentials)).data
-				setUser({ username, authenticated: id })
+			const { username, id } = (
+				await toast.promise(axios.post(`/api/auth/login`, credentials), {
+					loading: 'Signing in...',
+					success: 'Signed in!',
+					error: 'Error signing in',
+				})
+			).data
+			setUser({ username, authenticated: id })
 
-				toast.success(username + ' was logged in')
-			} catch (error: any) {
-				if (error.response.status === 401) {
-					handleError('Wrong username or password')
-					return
-				}
-				console.error(error)
-				handleError('Something went wrong')
-			}
 			// handle redirecting
 			const redirect = Router.query.redirect as string
 			if (redirect) {
@@ -90,34 +84,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	)
 	const signUp = useCallback(
 		async (credentials: SignUpProps) => {
-			try {
-				const { username, id } = (await axios.post(`/api/auth/user`, credentials)).data
+			const { username, id } = (
+				await toast.promise(axios.post(`/api/auth/user`, credentials), {
+					loading: 'Signing up...',
+					success: 'Signed up!',
+					error: ({ response }) => {
+						if (response?.status === 409) {
+							return 'Username already exists'
+						}
+						return 'Error signing up'
+					},
+				})
+			).data
 
-				setUser({ username, authenticated: id })
-				Router.push('/dashboard')
-				toast.success(username + ' was registered')
-			} catch (error: any) {
-				if (error.response.status === 409) {
-					handleError('This username already exists')
-					return
-				}
-				console.error(error)
-				handleError('Something went wrong')
-			}
+			setUser({ username, authenticated: id })
+			Router.push('/dashboard')
+			toast.success(username + ' was registered')
 		},
 		[Router],
 	)
 
 	const signOut = useCallback(async () => {
-		try {
-			await axios.post(`/api/auth/logout`)
-			setUser({ username: null, authenticated: false })
-			Router.reload()
-			toast.success(user?.username + ' logged out')
-		} catch (error) {
-			console.error(error)
-		}
-	}, [Router, user])
+		await toast.promise(axios.post(`/api/auth/logout`), {
+			loading: 'Signing out...',
+			success: 'Signed out!',
+			error: 'Error signing out',
+		})
+		setUser({ username: null, authenticated: false })
+		Router.reload()
+	}, [Router])
+
 	const value = useMemo(() => ({ user, signIn, signUp, signOut }), [user, signIn, signOut, signUp])
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
