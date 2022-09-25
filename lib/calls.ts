@@ -80,9 +80,11 @@ export const updateArticle = async (inputs: ArticleInputProps, article: ArticleP
 				if (typeof inputs.image !== 'string') {
 					//if image is not a string, it's a file
 					const cloudinary_img = await uploadImage(inputs.image)
-					body = { ...inputs, cloudinary_img }
+					body = { ...inputs, cloudinary_img, oldImageId: article.cloudinary_img?.id } as ArticleInputProps & {
+						oldImageId: string
+					}
 				}
-				resolve(await axios.patch(`/api/articles/${article._id}`, { ...body, oldImageId: article.cloudinary_img?.id }))
+				resolve((await axios.patch(`/api/articles/${article._id}`, { ...body })).data)
 			} catch (e) {
 				reject(e)
 			}

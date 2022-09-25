@@ -52,13 +52,13 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 	.patch(async (req, res) => {
 		const { id } = req.query
 		const { title, content, perex, privateDoc, cloudinary_img, oldImageId } = req.body as ArticleProps & {
-			oldImageId: string
+			oldImageId?: string
 		}
 
 		try {
 			const article = await Article.findByIdAndUpdate(id, { title, content, perex, cloudinary_img, privateDoc })
-			if (oldImageId && article.cloudinary_img?.id) {
-				console.log('deleting old image', oldImageId, article.cloudinary_img.id)
+			const imageId = article.cloudinary_img?.id
+			if (oldImageId && imageId !== oldImageId) {
 				await deleteImage(oldImageId)
 			}
 			return res.status(200).json({ success: true, data: article, message: 'Article successfully updated' })
