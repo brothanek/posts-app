@@ -1,32 +1,46 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Fullstack exercise - Articles app
 
-## Getting Started
+### Features
+ * CRUD - articles, comments, users
+ * Server Side Rendering - Protected Routes, Better Performance, SEO
+ * User Authentication
+ * Single or Multi-user Option (private articles)
+ * User Dashboard with sortable table
+ * Pagination
+ * Responsive Design
 
-First, run the development server:
 
-```bash
+## 🟢 [LIVE DEMO](https://fullstack-exercise.vercel.app/) 🟢
+* Create an account in order to see all features
+
+## 👑 *This project showcases my skills with following stack*:
+* [Next.js](https://nextjs.org/)
+* [React.js](https://reactjs.org/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [Tailwindcss](https://tailwindcss.com/) with [DaisyUI](https://daisyui.com/) plugin
+* [Node.js](https://nodejs.org/en/)
+* [MongoDB](https://www.mongodb.com/) database with [Mongoose](https://mongoosejs.com/) for object modeling
+* [PassportJS](https://www.passportjs.org/) - authentication middleware
+* [next-connect](https://www.npmjs.com/package/next-connect) - middleware for Next.js
+* and [more...](https://github.com/brothanek/fullstack-exercise/blob/main/package.json)
+
+
+
+## 💻 Run locally
+```
+git clone https://github.com/brothanek/fullstack-exercise.git
+```
+create `.env.local` file with variables from `.env.example`
+* MONGODB_URI - connect your MongoDB cluster
+* CLOUDINARY_URL - connect account from [cloudinary](https://cloudinary.com)
+* SESSION_SECRET - long password here e.g. `openssl rand -base64 64` (*recommended*)
+```
+yarn
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Have a great day ✨
