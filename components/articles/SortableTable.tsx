@@ -7,8 +7,9 @@ import { FiEdit2 } from 'react-icons/fi'
 import { MdArrowDownward, MdArrowUpward } from 'react-icons/md'
 import { FormattedDate } from 'react-intl'
 import WithLink from 'components/WithLink'
-import type { ArticleProps, ArticleKey } from 'types'
 import { deleteArticle } from 'lib/calls'
+import { toastify } from '@components/CustomToast'
+import type { ArticleProps, ArticleKey } from 'types'
 
 const COLUMNS: { accessor: ArticleKey; Header: string }[] = [
 	{ accessor: 'title', Header: 'Article Title' },
@@ -45,10 +46,15 @@ export const SortableTable = ({ tableData = [] }: { tableData: ArticleProps[] })
 		{ imageId, articleId }: { imageId: string; articleId: string },
 	) => {
 		event.preventDefault()
-		if (!window.confirm('Are you sure to delete this article? This action is irreversible.')) return
-		if (await deleteArticle(articleId, imageId)) setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
+		toastify({
+			title: 'Delete article',
+			body: 'Are you sure you want to delete this article?',
+			onConfirm: async () => {
+				const deleted = await deleteArticle(articleId, imageId)
+				if (deleted) setArticles((arr) => _.filter(arr, ({ _id }) => _id !== articleId))
+			},
+		})
 	}
-
 	const handleFilterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.currentTarget
 		setGlobalFilter(value)
