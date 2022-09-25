@@ -3,10 +3,10 @@ import { Formik, FormikHelpers } from 'formik'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import ReactMarkdown from 'react-markdown'
-import { postArticle, uploadImage } from 'lib/calls'
+import { postArticle } from 'lib/calls'
 import { ImageHandler } from '../ImageHandler'
 import { FcAbout } from 'react-icons/fc'
-import type { ArticleInputProps, ImageProps } from 'types'
+import type { ArticleInputProps, ArticleProps, ImageProps } from 'types'
 
 interface FormProps {
 	author?: string
@@ -61,18 +61,11 @@ const ArticleForm: React.FC<FormProps> = ({
 
 	const handleSubmit = async (inputs: ArticleInputProps, { setSubmitting }: FormikHelpers<ArticleInputProps>) => {
 		if (submitCallback) {
-			let body = inputs
-			if (typeof inputs.image !== 'string') {
-				//if image is not a string, it's a file
-				const cloudinary_img = await uploadImage(inputs.image)
-				body = { ...inputs, cloudinary_img }
-			}
-			await submitCallback(body)
+			await submitCallback(inputs)
 		} else {
-			const { success } = await postArticle(inputs)
-			if (success) {
+			const res = (await postArticle(inputs)) as { success: boolean; data: ArticleProps }
+			if (res?.success) {
 				Router.push('/dashboard')
-				toast.success('Successfully created')
 			} else {
 				toast.error('Something went wrong')
 			}

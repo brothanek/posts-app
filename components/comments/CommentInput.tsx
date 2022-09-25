@@ -27,7 +27,8 @@ export const CommentInput = ({
 			return
 		}
 		setLoading(true)
-		const comment = await postComment(articleId, content)
+		const res = (await postComment(articleId, content)) as any
+		const { comment } = res.data
 		if (comment) {
 			setState((prev) => ({
 				...prev,

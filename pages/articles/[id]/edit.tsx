@@ -11,7 +11,10 @@ const Edit: NextPage<{ article: ArticleProps }> = ({ article }) => {
 	const Router = useRouter()
 
 	const handleEdit = async (inputs: ArticleInputProps) => {
-		if (await updateArticle(inputs, article)) Router.push('/dashboard')
+		const res = (await updateArticle(inputs, article)) as { data: ArticleProps; success: boolean }
+		if (res?.success) {
+			Router.push('/dashboard')
+		}
 	}
 
 	return (
