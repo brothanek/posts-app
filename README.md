@@ -11,9 +11,9 @@
 
 
 ## 🟢 [LIVE DEMO](https://fullstack-exercise.vercel.app/) 🟢
-* Create an account in order to see all features
+**Please, create an account in order to see all features (it will only take you a few seconds)**
 
-## 👑 *This project showcases my skills with following stack*:
+## Stack used:
 * [Next.js](https://nextjs.org/)
 * [React.js](https://reactjs.org/)
 * [TypeScript](https://www.typescriptlang.org/)
