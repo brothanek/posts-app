@@ -99,7 +99,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 			setUser({ username, authenticated: id })
 			Router.push('/dashboard')
-			toast.success(username + ' was registered')
 		},
 		[Router],
 	)

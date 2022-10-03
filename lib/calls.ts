@@ -19,6 +19,7 @@ export const uploadImage = async (image: File) => {
 	} catch (error) {
 		console.log(error)
 		toast.error('Image upload failed, please try again later')
+		return
 	}
 }
 
@@ -44,11 +45,12 @@ export const postComment = async (articleId: string, content: string) => {
 export const postArticle = async (inputs: ArticleInputProps) => {
 	return await toast.promise(
 		new Promise(async (resolve, reject) => {
-			let imageId
+			let cloudinary_img
 			try {
-				const cloudinary_img = await uploadImage(inputs.image as File)
-				if (!cloudinary_img) return
-				imageId = cloudinary_img.id
+				if (inputs.image) {
+					cloudinary_img = await uploadImage(inputs.image as File)
+					if (!cloudinary_img) return
+				}
 
 				const articleBody: ArticleProps = {
 					...inputs,
@@ -59,7 +61,7 @@ export const postArticle = async (inputs: ArticleInputProps) => {
 				resolve(data)
 				return data
 			} catch (e) {
-				if (imageId) await axios.delete(`/api/images/${imageId}`)
+				if (cloudinary_img?.id) await axios.delete(`/api/images/${cloudinary_img.id}`)
 				reject(e)
 				console.log(e)
 			}

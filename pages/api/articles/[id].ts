@@ -14,7 +14,7 @@ export const getArticle = async (id: string | string[]) => {
 const CLOUDINARY_URL = process.env.CLOUDINARY_URL
 
 // delete image from Cloudinary
-const deleteImage = async (id: string) => {
+const deleteImage = async (id: string = '') => {
 	const { hostname: cloud_name, username: api_key, password: api_secret } = new URL(CLOUDINARY_URL || '')
 	cloudinary.config({
 		cloud_name,
@@ -71,8 +71,8 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 	.delete(async (req, res) => {
 		const { id } = req.query
 		try {
-			const article = await Article.findByIdAndDelete(id)
-			await deleteImage(article.cloudinary_img)
+			const article = (await Article.findByIdAndDelete(id)) as ArticleProps
+			await deleteImage(article.cloudinary_img?.id)
 			return res.status(200).json({ success: true, message: 'Article deleted' })
 		} catch (e) {
 			console.log(e)

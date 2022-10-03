@@ -30,9 +30,6 @@ const handleValidation = (values: { title: string; perex: string; content: strin
 	if (values.perex.length > 200) {
 		errors.perex = 'Perex must be less than 200 characters'
 	}
-	if (!values.image) {
-		errors.image = 'Image is required'
-	}
 	if (values.content.length > 3000) {
 		errors.content = 'Perex must be less than 3000 characters'
 	}
