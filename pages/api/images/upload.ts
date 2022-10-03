@@ -7,12 +7,11 @@ const CLOUDINARY_URL = process.env.CLOUDINARY_URL
 const form = formidable({})
 
 // upload to Cloudinary
-const upload = async (imagePath: string, cloudinaryUrl: string) => {
-	const { hostname: cloud_name, username: api_key, password: api_secret } = new URL(cloudinaryUrl)
+const upload = async (imagePath: string) => {
 	cloudinary.config({
-		cloud_name,
-		api_key,
-		api_secret,
+		cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+		api_key: process.env.CLOUDINARY_API_KEY,
+		api_secret: process.env.CLOUDINARY_API_SECRET,
 	})
 	const image = await cloudinary.uploader.upload(imagePath, {
 		quality: '20',
@@ -30,7 +29,7 @@ const handler = nc<NextApiRequest, NextApiResponse>().post(async (req, res) => {
 			try {
 				const imagePath = (files.image as formidable.File).toJSON().filepath
 				if (!imagePath) return res.json({ success: false, message: 'No image path found' })
-				const { url, id } = await upload(imagePath, CLOUDINARY_URL)
+				const { url, id } = await upload(imagePath)
 				return res.status(200).json({ success: true, message: 'Image uploaded', url, id })
 			} catch (e) {
 				console.log(e)
