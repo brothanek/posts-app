@@ -31,9 +31,9 @@
 git clone https://github.com/brothanek/fullstack-exercise.git
 ```
 create `.env.local` file with variables from `.env.example`
-* MONGODB_URI - connect your MongoDB cluster
-* CLOUDINARY_URL - connect account from [cloudinary](https://cloudinary.com)
-* SESSION_SECRET - long password here e.g. `openssl rand -base64 64` (*recommended*)
+* `MONGODB_URI` - connect your MongoDB cluster
+* `CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, CLOUDINARY_CLOUD_NAME` - connect account from [cloudinary](https://cloudinary.com)
+* `SESSION_SECRET` - long password here e.g. `openssl rand -base64 64` (*recommended*)
 ```
 yarn
 yarn dev
