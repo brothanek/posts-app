@@ -17,7 +17,7 @@ const SignUpForm = ({ setCreatingAcc }: { setCreatingAcc: (bool: boolean) => voi
 		if (!values.password) {
 			errors.password = 'Required'
 		}
-		if (values.confirmPassword.length > 1 && values.password !== values.confirmPassword) {
+		if (values.password !== values.confirmPassword) {
 			errors.confirmPassword = 'Passwords must match'
 		}
 		return errors
