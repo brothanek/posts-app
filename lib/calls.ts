@@ -24,7 +24,7 @@ export const uploadImage = async (image: File) => {
 }
 
 export const deleteComment = async (_id: string, articleId: string) => {
-	return await toast.promise(axios.delete(`/api/comments/${_id}`, { data: { articleId } }), {
+	return toast.promise(axios.delete(`/api/comments/${_id}`, { data: { articleId } }), {
 		loading: 'Deleting comment...',
 		success: 'Comment deleted',
 		error: (err) => {
@@ -35,7 +35,7 @@ export const deleteComment = async (_id: string, articleId: string) => {
 }
 
 export const postComment = async (articleId: string, content: string) => {
-	return await toast.promise(axios.post('/api/comments', { articleId, content }), {
+	return toast.promise(axios.post('/api/comments', { articleId, content }), {
 		loading: 'Posting...',
 		success: 'Comment posted',
 		error: 'Something went wrong',
@@ -43,7 +43,7 @@ export const postComment = async (articleId: string, content: string) => {
 }
 
 export const postArticle = async (inputs: ArticleInputProps) => {
-	return await toast.promise(
+	return toast.promise(
 		new Promise(async (resolve, reject) => {
 			let cloudinary_img
 			try {
@@ -75,7 +75,7 @@ export const postArticle = async (inputs: ArticleInputProps) => {
 }
 
 export const updateArticle = async (inputs: ArticleInputProps, article: ArticleProps) => {
-	return await toast.promise(
+	return toast.promise(
 		new Promise(async (resolve, reject) => {
 			try {
 				let body = inputs
@@ -100,7 +100,7 @@ export const updateArticle = async (inputs: ArticleInputProps, article: ArticleP
 }
 
 export const deleteArticle = async (articleId: string) => {
-	return await toast.promise(axios.delete(`/api/articles/${articleId}`), {
+	return toast.promise(axios.delete(`/api/articles/${articleId}`), {
 		loading: 'Deleting article...',
 		success: 'Article deleted',
 		error: 'Something went wrong',

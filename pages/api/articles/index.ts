@@ -7,7 +7,7 @@ import type { NextApiResponse } from 'next'
 
 export const getUserArticles = async (username: string) => {
 	await dbConnect()
-	return await Article.find({ author: username }).sort({ createdAt: -1 })
+	return Article.find({ author: username }).sort({ createdAt: -1 })
 }
 
 const CONFIG = { page: '1', limit: '8', sort: { createdAt: 'desc' } }
@@ -15,7 +15,7 @@ const query = { privateDoc: false }
 
 export const getArticles = async () => {
 	await dbConnect()
-	return await Article.find({
+	return Article.find({
 		$or: [query],
 	}).sort({ createdAt: -1 })
 }
@@ -23,9 +23,10 @@ export const getArticles = async () => {
 export const getPaginatedArticles = async (options = CONFIG) => {
 	await dbConnect()
 	// find public articles
-	var myAggregate = Article.aggregate([{ $match: query }])
+	const myAggregate = Article.aggregate([{ $match: query }])
 	// @ts-ignore
-	return await Article.aggregatePaginate(myAggregate, options, function (err, results) {
+
+	return Article.aggregatePaginate(myAggregate, options, (err, results) => {
 		if (err) {
 			console.error(err)
 			return []

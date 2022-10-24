@@ -35,6 +35,6 @@ export function requireAuthentication(gssp: GetServerSideProps) {
 		}
 		// FIXME: Custom type for gssp with user as a prop
 		// @ts-ignore
-		return await gssp({ ...ctx, user })
+		return gssp({ ...ctx, user })
 	}
 }

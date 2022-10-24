@@ -21,7 +21,7 @@ const deleteImage = async (id: string = '') => {
 		api_key,
 		api_secret,
 	})
-	return await cloudinary.uploader.destroy(id)
+	return cloudinary.uploader.destroy(id)
 }
 
 const handler = nc<NextApiRequestWithUser, NextApiResponse>()
