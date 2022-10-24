@@ -113,9 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		Router.reload()
 	}, [Router])
 
-	const value = useMemo(() => ({ user, signIn, signUp, signOut }), [user, signIn, signOut, signUp])
-
-	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+	return <AuthContext.Provider value={{ user, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
 }
 
 export default AuthContext
