@@ -4,6 +4,24 @@ import dbConnect from 'lib/dbConnect.ts'
 import auth from 'middleware/auth'
 import { ArticleProps, NextApiRequestWithUser } from 'types'
 import type { NextApiResponse } from 'next'
+import axios from 'axios'
+
+type EAInput = {
+	id: number | string
+	data: {
+		number: number | string
+		infoType: string
+	}
+}
+
+type EAOutput = {
+	jobRunId: string | number
+	statusCode: number
+	data: {
+		result?: any
+	}
+	error?: string
+}
 
 export const getUserArticles = async (username: string) => {
 	await dbConnect()
@@ -58,25 +76,37 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 			res.status(400).json({ success: false, error })
 		}
 	})
-	.use(auth)
-	.post(async (req, res) => {
-		try {
-			const { title, content, perex, cloudinary_img, privateDoc } = req.body as ArticleProps
-			const article = await Article.create({
-				title,
-				content,
-				perex,
-				privateDoc,
-				author: req.user.username,
-				comments: [],
-				cloudinary_img,
-			})
+	// .use(auth)
+	.post('/', async function (req: any, res: Response) {
+		const eaInputData: EAInput = req.body
+		console.log(' Request data received: ', eaInputData)
 
-			res.status(200).json({ success: true, data: article, message: 'Article created!' })
-		} catch (error) {
-			console.log(error)
-			res.status(400).json({ success: false, error })
+		// Build API Request
+		const url = `http://numbersapi.com/${eaInputData.data.number}/${eaInputData.data.infoType}`
+
+		let eaResponse: EAOutput = {
+			data: {},
+			jobRunId: eaInputData.id,
+			statusCode: 0,
 		}
+
+		try {
+			const apiResponse = await axios.get(url)
+
+			eaResponse.data = { result: apiResponse.data }
+			eaResponse.statusCode = apiResponse.status
+			// @ts-ignore
+			res.json(eaResponse)
+		} catch (error: any) {
+			console.error('API Response Error: ', error)
+			eaResponse.error = error.message
+			eaResponse.statusCode = error.response.status
+			// @ts-ignore
+			res.json(eaResponse)
+		}
+
+		console.log('returned response:  ', eaResponse)
+		return
 	})
 
 export default handler
