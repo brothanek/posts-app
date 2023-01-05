@@ -77,7 +77,7 @@ const handler = nc<NextApiRequestWithUser, NextApiResponse>()
 		}
 	})
 	// .use(auth)
-	.post('/', async function (req: any, res: Response) {
+	.post(async function (req: any, res: Response) {
 		const eaInputData: EAInput = req.body
 		console.log(' Request data received: ', eaInputData)
 
